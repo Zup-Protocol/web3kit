@@ -1,0 +1,19 @@
+name: web3kit
+description: "Flutter UI Kit & Library to interact with Web3 seamlessly"
+version: 0.0.1
+homepage: https://www.zupprotocol.xyz
+repository: https://github.com/Zup-Protocol/web3kit
+
+environment:
+  sdk: ^3.5.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
