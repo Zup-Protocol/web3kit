@@ -15,9 +15,6 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/argent.svg
-  SvgGenImage get argent => const SvgGenImage('assets/icons/argent.svg');
-
   /// File path: assets/icons/cable.connector.horizontal.svg
   SvgGenImage get cableConnectorHorizontal => const SvgGenImage('assets/icons/cable.connector.horizontal.svg');
 
@@ -42,11 +39,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/trust_wallet.svg
   SvgGenImage get trustWallet => const SvgGenImage('assets/icons/trust_wallet.svg');
 
+  /// File path: assets/icons/wallet.bifold.svg
+  SvgGenImage get walletBifold => const SvgGenImage('assets/icons/wallet.bifold.svg');
+
   /// File path: assets/icons/wallet_connect.svg
   SvgGenImage get walletConnect => const SvgGenImage('assets/icons/wallet_connect.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [argent, cableConnectorHorizontal, coinbaseWallet, metamask, onekey, phantom, rabby, rainbow, trustWallet, walletConnect];
+  List<SvgGenImage> get values => [cableConnectorHorizontal, coinbaseWallet, metamask, onekey, phantom, rabby, rainbow, trustWallet, walletBifold, walletConnect];
 }
 
 class $AssetsJsGen {

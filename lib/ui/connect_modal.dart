@@ -31,7 +31,7 @@ class ConnectModal extends StatelessWidget {
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: WalletButton(
-                wallet: WalletBrand.values[index],
+                walletProvider: WalletBrand.values[index],
               ),
             ),
           ),
