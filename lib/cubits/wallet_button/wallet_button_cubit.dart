@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:web3kit/core/core.dart';
+import 'package:web3kit/core/dtos/wallet_detail.dart';
 
 part 'wallet_button_cubit.freezed.dart';
 part 'wallet_button_state.dart';
@@ -10,18 +11,15 @@ class WalletButtonCubit extends Cubit<WalletButtonState> {
 
   final Wallet wallet;
 
-  void connectWallet(WalletBrand walletProvider) async {
+  void connectWallet(WalletDetail walletDetail) async {
     emit(const WalletButtonState.loading());
 
-    if (!wallet.isWalletInstalled(walletProvider)) emit(const WalletButtonState.notInstalled());
-
     try {
-      await wallet.connect(walletProvider);
+      Signer signer = await wallet.connect(walletDetail);
 
-      emit(const WalletButtonState.initial());
+      emit(WalletButtonState.connectSuccess(signer));
     } catch (e) {
       if (e is UserRejectedAction) {
-        // do nothing
         return emit(const WalletButtonState.initial());
       } else {
         emit(const WalletButtonState.error());

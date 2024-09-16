@@ -1,0 +1,25 @@
+{
+    "@@locale": "en",
+    "installed": "Installed",
+    "connectWallet": "Connect Wallet",
+    "connected": "Connected",
+    "disconnectWallet": "Disconnect Wallet",
+    "addressCopiedText": "Address copied to clipboard",
+    "connectModalDescription": "Choose how you want to connect to use the protocol!",
+    "walletButtonConnectError": "An error occurred while attempting to connect to {wallet}!",
+    "@walletButtonConnectError": {
+        "placeholders": {
+            "wallet": {
+                "type": "String"
+            }
+        }
+    },
+    "walletButtonWalletNotInstalled": "{wallet} is not installed!",
+    "@walletButtonWalletNotInstalled": {
+        "placeholders": {
+            "wallet": {
+                "type": "String"
+            }
+        }
+    }
+}

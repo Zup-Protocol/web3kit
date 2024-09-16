@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web3kit/gen/assets.gen.dart';
-import 'package:web3kit/ui/connect_modal.dart';
+import 'package:web3kit/web3kit.dart';
 import 'package:zup_ui_kit/buttons/buttons.dart';
 
 /// Build a button widget that allows the user to connect their wallet
@@ -19,10 +19,17 @@ class ConnectButton extends StatefulWidget {
 class _ConnectButtonState extends State<ConnectButton> {
   @override
   Widget build(BuildContext context) {
-    return ZupPrimaryButton(
-      title: "Connect Wallet",
-      onPressed: () => ConnectModal.show(context),
-      icon: Assets.icons.cableConnectorHorizontal.svg(package: "web3kit"),
-    );
+    return StreamBuilder(
+        stream: Web3client.shared.wallet.signer,
+        builder: (context, snapshot) {
+          return snapshot.data == null
+              ? ZupPrimaryButton(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  title: "Connect Wallet",
+                  onPressed: () => ConnectModal.show(context, onConnectWallet: (signer) {}),
+                  icon: Assets.icons.cableConnectorHorizontal.svg(package: "web3kit"),
+                )
+              : ConnectedWalletButton(signer: snapshot.data!);
+        });
   }
 }

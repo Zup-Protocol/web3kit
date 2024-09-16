@@ -18,26 +18,11 @@ class $AssetsIconsGen {
   /// File path: assets/icons/cable.connector.horizontal.svg
   SvgGenImage get cableConnectorHorizontal => const SvgGenImage('assets/icons/cable.connector.horizontal.svg');
 
-  /// File path: assets/icons/coinbase_wallet.svg
-  SvgGenImage get coinbaseWallet => const SvgGenImage('assets/icons/coinbase_wallet.svg');
+  /// File path: assets/icons/cable.connector.slash.svg
+  SvgGenImage get cableConnectorSlash => const SvgGenImage('assets/icons/cable.connector.slash.svg');
 
-  /// File path: assets/icons/metamask.svg
-  SvgGenImage get metamask => const SvgGenImage('assets/icons/metamask.svg');
-
-  /// File path: assets/icons/onekey.svg
-  SvgGenImage get onekey => const SvgGenImage('assets/icons/onekey.svg');
-
-  /// File path: assets/icons/phantom.svg
-  SvgGenImage get phantom => const SvgGenImage('assets/icons/phantom.svg');
-
-  /// File path: assets/icons/rabby.svg
-  SvgGenImage get rabby => const SvgGenImage('assets/icons/rabby.svg');
-
-  /// File path: assets/icons/rainbow.svg
-  SvgGenImage get rainbow => const SvgGenImage('assets/icons/rainbow.svg');
-
-  /// File path: assets/icons/trust_wallet.svg
-  SvgGenImage get trustWallet => const SvgGenImage('assets/icons/trust_wallet.svg');
+  /// File path: assets/icons/square.on.square.svg
+  SvgGenImage get squareOnSquare => const SvgGenImage('assets/icons/square.on.square.svg');
 
   /// File path: assets/icons/wallet.bifold.svg
   SvgGenImage get walletBifold => const SvgGenImage('assets/icons/wallet.bifold.svg');
@@ -46,27 +31,13 @@ class $AssetsIconsGen {
   SvgGenImage get walletConnect => const SvgGenImage('assets/icons/wallet_connect.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [cableConnectorHorizontal, coinbaseWallet, metamask, onekey, phantom, rabby, rainbow, trustWallet, walletBifold, walletConnect];
-}
-
-class $AssetsJsGen {
-  const $AssetsJsGen();
-
-  /// File path: assets/js/ethers.js
-  String get ethers => 'assets/js/ethers.js';
-
-  /// File path: assets/js/wallet.js
-  String get wallet => 'assets/js/wallet.js';
-
-  /// List of all assets
-  List<String> get values => [ethers, wallet];
+  List<SvgGenImage> get values => [cableConnectorHorizontal, cableConnectorSlash, squareOnSquare, walletBifold, walletConnect];
 }
 
 class Assets {
   Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
-  static const $AssetsJsGen js = $AssetsJsGen();
 }
 
 class SvgGenImage {

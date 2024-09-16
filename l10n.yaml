@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+template-arb-file: en.arb
+output-class: Web3KitLocalizations
+nullable-getter: false
+synthetic-package: false
+output-dir: lib/l10n/gen
+format: true

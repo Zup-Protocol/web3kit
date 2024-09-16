@@ -6,5 +6,5 @@ include: package:flutter_lints/flutter.yaml
 linter:
   rules:
     always_declare_return_types: true
-    avoid_annotating_with_dynamic: true
+    avoid_annotating_with_dynamic: false
     avoid_as: true

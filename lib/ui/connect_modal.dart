@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:web3kit/core/enums/wallet_brand.dart';
-import 'package:web3kit/ui/wallet_button.dart';
+import 'package:web3kit/core/signer.dart';
+import 'package:web3kit/web3kit.dart';
 import 'package:zup_ui_kit/modals/zup_modal.dart';
 
 /// Show a modal that allows the user to connect their wallet.
 ///
 /// call `ConnectModal.show()` to open the modal from anywhere
 class ConnectModal extends StatelessWidget {
-  const ConnectModal({super.key});
+  const ConnectModal({super.key, required this.onConnectWallet});
 
-  static Future<void> show(BuildContext context) async {
+  final Function(Signer signer)? onConnectWallet;
+
+  static Future<void> show(
+    BuildContext context, {
+    required Function(Signer signer)? onConnectWallet,
+  }) async {
     ZupModal.show(
       context,
-      title: "Select your Wallet",
-      description: "Choose how you want to connect to use the protocol!",
+      title: Web3KitLocalizations.of(context).connectWallet,
+      description: Web3KitLocalizations.of(context).connectModalDescription,
       size: const Size(400, 500),
-      content: const ConnectModal(),
+      content: ConnectModal(onConnectWallet: onConnectWallet),
     );
   }
 
@@ -27,11 +32,16 @@ class ConnectModal extends StatelessWidget {
         padding: const EdgeInsets.all(20).copyWith(top: 0),
         child: Column(
           children: List.generate(
-            WalletBrand.values.length,
+            Web3client.shared.wallet.installedWallets.length,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: WalletButton(
-                walletProvider: WalletBrand.values[index],
+                onConnect: (signer) {
+                  if (onConnectWallet != null) onConnectWallet!(signer);
+
+                  Navigator.of(context).pop();
+                },
+                wallet: Web3client.shared.wallet.installedWallets[index],
               ),
             ),
           ),

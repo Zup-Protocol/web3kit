@@ -19,6 +19,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
     required TResult Function() loading,
     required TResult Function() notInstalled,
     required TResult Function() error,
@@ -27,6 +28,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
     TResult? Function()? loading,
     TResult? Function()? notInstalled,
     TResult? Function()? error,
@@ -35,6 +37,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
     TResult Function()? loading,
     TResult Function()? notInstalled,
     TResult Function()? error,
@@ -44,6 +47,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
     required TResult Function(_Loading value) loading,
     required TResult Function(_NotInstalled value) notInstalled,
     required TResult Function(_Error value) error,
@@ -52,6 +56,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_NotInstalled value)? notInstalled,
     TResult? Function(_Error value)? error,
@@ -60,6 +65,7 @@ mixin _$WalletButtonState {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
     TResult Function(_Loading value)? loading,
     TResult Function(_NotInstalled value)? notInstalled,
     TResult Function(_Error value)? error,
@@ -131,6 +137,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
     required TResult Function() loading,
     required TResult Function() notInstalled,
     required TResult Function() error,
@@ -142,6 +149,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
     TResult? Function()? loading,
     TResult? Function()? notInstalled,
     TResult? Function()? error,
@@ -153,6 +161,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
     TResult Function()? loading,
     TResult Function()? notInstalled,
     TResult Function()? error,
@@ -168,6 +177,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
     required TResult Function(_Loading value) loading,
     required TResult Function(_NotInstalled value) notInstalled,
     required TResult Function(_Error value) error,
@@ -179,6 +189,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_NotInstalled value)? notInstalled,
     TResult? Function(_Error value)? error,
@@ -190,6 +201,7 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
     TResult Function(_Loading value)? loading,
     TResult Function(_NotInstalled value)? notInstalled,
     TResult Function(_Error value)? error,
@@ -204,6 +216,165 @@ class _$InitialImpl implements _Initial {
 
 abstract class _Initial implements WalletButtonState {
   const factory _Initial() = _$InitialImpl;
+}
+
+/// @nodoc
+abstract class _$$ConnectSuccessImplCopyWith<$Res> {
+  factory _$$ConnectSuccessImplCopyWith(_$ConnectSuccessImpl value,
+          $Res Function(_$ConnectSuccessImpl) then) =
+      __$$ConnectSuccessImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Signer signer});
+}
+
+/// @nodoc
+class __$$ConnectSuccessImplCopyWithImpl<$Res>
+    extends _$WalletButtonStateCopyWithImpl<$Res, _$ConnectSuccessImpl>
+    implements _$$ConnectSuccessImplCopyWith<$Res> {
+  __$$ConnectSuccessImplCopyWithImpl(
+      _$ConnectSuccessImpl _value, $Res Function(_$ConnectSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of WalletButtonState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? signer = null,
+  }) {
+    return _then(_$ConnectSuccessImpl(
+      null == signer
+          ? _value.signer
+          : signer // ignore: cast_nullable_to_non_nullable
+              as Signer,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ConnectSuccessImpl implements _ConnectSuccess {
+  const _$ConnectSuccessImpl(this.signer);
+
+  @override
+  final Signer signer;
+
+  @override
+  String toString() {
+    return 'WalletButtonState.connectSuccess(signer: $signer)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ConnectSuccessImpl &&
+            (identical(other.signer, signer) || other.signer == signer));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, signer);
+
+  /// Create a copy of WalletButtonState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ConnectSuccessImplCopyWith<_$ConnectSuccessImpl> get copyWith =>
+      __$$ConnectSuccessImplCopyWithImpl<_$ConnectSuccessImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
+    required TResult Function() loading,
+    required TResult Function() notInstalled,
+    required TResult Function() error,
+  }) {
+    return connectSuccess(signer);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
+    TResult? Function()? loading,
+    TResult? Function()? notInstalled,
+    TResult? Function()? error,
+  }) {
+    return connectSuccess?.call(signer);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
+    TResult Function()? loading,
+    TResult Function()? notInstalled,
+    TResult Function()? error,
+    required TResult orElse(),
+  }) {
+    if (connectSuccess != null) {
+      return connectSuccess(signer);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
+    required TResult Function(_Loading value) loading,
+    required TResult Function(_NotInstalled value) notInstalled,
+    required TResult Function(_Error value) error,
+  }) {
+    return connectSuccess(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
+    TResult? Function(_Loading value)? loading,
+    TResult? Function(_NotInstalled value)? notInstalled,
+    TResult? Function(_Error value)? error,
+  }) {
+    return connectSuccess?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
+    TResult Function(_Loading value)? loading,
+    TResult Function(_NotInstalled value)? notInstalled,
+    TResult Function(_Error value)? error,
+    required TResult orElse(),
+  }) {
+    if (connectSuccess != null) {
+      return connectSuccess(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ConnectSuccess implements WalletButtonState {
+  const factory _ConnectSuccess(final Signer signer) = _$ConnectSuccessImpl;
+
+  Signer get signer;
+
+  /// Create a copy of WalletButtonState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ConnectSuccessImplCopyWith<_$ConnectSuccessImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -248,6 +419,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
     required TResult Function() loading,
     required TResult Function() notInstalled,
     required TResult Function() error,
@@ -259,6 +431,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
     TResult? Function()? loading,
     TResult? Function()? notInstalled,
     TResult? Function()? error,
@@ -270,6 +443,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
     TResult Function()? loading,
     TResult Function()? notInstalled,
     TResult Function()? error,
@@ -285,6 +459,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
     required TResult Function(_Loading value) loading,
     required TResult Function(_NotInstalled value) notInstalled,
     required TResult Function(_Error value) error,
@@ -296,6 +471,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_NotInstalled value)? notInstalled,
     TResult? Function(_Error value)? error,
@@ -307,6 +483,7 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
     TResult Function(_Loading value)? loading,
     TResult Function(_NotInstalled value)? notInstalled,
     TResult Function(_Error value)? error,
@@ -365,6 +542,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
     required TResult Function() loading,
     required TResult Function() notInstalled,
     required TResult Function() error,
@@ -376,6 +554,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
     TResult? Function()? loading,
     TResult? Function()? notInstalled,
     TResult? Function()? error,
@@ -387,6 +566,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
     TResult Function()? loading,
     TResult Function()? notInstalled,
     TResult Function()? error,
@@ -402,6 +582,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
     required TResult Function(_Loading value) loading,
     required TResult Function(_NotInstalled value) notInstalled,
     required TResult Function(_Error value) error,
@@ -413,6 +594,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_NotInstalled value)? notInstalled,
     TResult? Function(_Error value)? error,
@@ -424,6 +606,7 @@ class _$NotInstalledImpl implements _NotInstalled {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
     TResult Function(_Loading value)? loading,
     TResult Function(_NotInstalled value)? notInstalled,
     TResult Function(_Error value)? error,
@@ -482,6 +665,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
+    required TResult Function(Signer signer) connectSuccess,
     required TResult Function() loading,
     required TResult Function() notInstalled,
     required TResult Function() error,
@@ -493,6 +677,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
+    TResult? Function(Signer signer)? connectSuccess,
     TResult? Function()? loading,
     TResult? Function()? notInstalled,
     TResult? Function()? error,
@@ -504,6 +689,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
+    TResult Function(Signer signer)? connectSuccess,
     TResult Function()? loading,
     TResult Function()? notInstalled,
     TResult Function()? error,
@@ -519,6 +705,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
+    required TResult Function(_ConnectSuccess value) connectSuccess,
     required TResult Function(_Loading value) loading,
     required TResult Function(_NotInstalled value) notInstalled,
     required TResult Function(_Error value) error,
@@ -530,6 +717,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
+    TResult? Function(_ConnectSuccess value)? connectSuccess,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_NotInstalled value)? notInstalled,
     TResult? Function(_Error value)? error,
@@ -541,6 +729,7 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
+    TResult Function(_ConnectSuccess value)? connectSuccess,
     TResult Function(_Loading value)? loading,
     TResult Function(_NotInstalled value)? notInstalled,
     TResult Function(_Error value)? error,

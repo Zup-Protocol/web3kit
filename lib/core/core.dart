@@ -1,6 +1,6 @@
 library core;
 
-export 'enums/wallet_brand.dart';
-export 'ethers/ethers.dart';
 export 'ethers/ethers_exceptions.dart';
+export 'extensions/string_extension.dart';
+export 'signer.dart';
 export 'wallet.dart';

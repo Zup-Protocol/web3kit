@@ -9,14 +9,21 @@ environment:
   sdk: ^3.5.2
 
 dependencies:
+  collection: ^1.18.0
   flutter:
     sdk: flutter
   flutter_animate: ^4.5.0
   flutter_bloc: ^8.1.6
+  flutter_localizations:
+    sdk: flutter
   flutter_svg: ^2.0.10+1
   freezed: ^2.5.7
   freezed_annotation: ^2.4.4
   get_it: ^7.7.0
+  intl: ^0.19.0
+  random_avatar: ^0.0.8
+  shared_preferences: ^2.3.2
+  web: ^1.0.0
   zup_ui_kit:
     path: ../zup_ui_kit
 
@@ -40,5 +47,4 @@ flutter_gen:
 flutter:
   generate: true
   assets:
-    - assets/js/
     - assets/icons/
