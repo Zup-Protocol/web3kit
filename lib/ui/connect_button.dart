@@ -20,7 +20,7 @@ class _ConnectButtonState extends State<ConnectButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: Wallet.shared.signer,
+        stream: Wallet.shared.signerStream,
         builder: (context, snapshot) {
           return snapshot.data == null
               ? ZupPrimaryButton(

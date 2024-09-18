@@ -4,7 +4,7 @@ import "package:shared_preferences_platform_interface/shared_preferences_async_p
 import "package:test/test.dart";
 import "package:web3kit/core/web3_client.dart";
 
-import "../mocktail_mocks.dart";
+import "../mocks.dart";
 
 void main() {
   late BrowserProviderMock browserProvider;

@@ -1,3 +1,4 @@
+import "package:equatable/equatable.dart";
 import "package:freezed_annotation/freezed_annotation.dart";
 
 @internal
@@ -7,8 +8,13 @@ class JS {
 }
 
 @internal
-class JSObject {
+class JSObject extends Equatable {
   bool isA<T extends JSObject?>() => true;
+
+  final Map<JSAny, JSAny?> properties = {};
+
+  @override
+  List<Object?> get props => [properties];
 }
 
 @internal
@@ -18,12 +24,19 @@ typedef JSAnyRepType = Object;
 class JSAny {}
 
 @internal
-class JSPromise<T> {}
+class JSPromise<T> {
+  JSPromise(this.value);
+
+  T value;
+}
 
 @internal
-class JSString<T> implements JSAny {
+class JSString<T> extends Equatable implements JSAny {
   final String name;
   const JSString(this.name);
+
+  @override
+  List<Object?> get props => [name];
 }
 
 @internal
@@ -33,15 +46,18 @@ class JSFunction {
 }
 
 @internal
-class JSArray<T> implements JSAny {
+class JSArray<T> extends Equatable implements JSAny {
   JSArray(this.list);
 
   List<T> list;
+
+  @override
+  List<Object?> get props => [list];
 }
 
 @internal
 extension JSPromiseToFuture<T> on JSPromise<T> {
-  Future<T> get toDart => Future.value();
+  Future<T> get toDart async => await Future.value(value);
 }
 
 @internal

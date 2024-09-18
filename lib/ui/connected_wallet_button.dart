@@ -21,7 +21,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
 
   @override
   void initState() {
-    Web3Client.shared.wallet.signer.listen((signer) {
+    Web3Client.shared.wallet.signerStream.listen((signer) {
       if (signer != null && signer != widget.signer) {
         if (mounted) cubit?.loadSigner(signer);
       }

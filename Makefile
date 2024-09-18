@@ -7,4 +7,4 @@ gen-l10n:
 	@flutter gen-l10n
 
 test:
-	@flutter test --coverage && genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html
+	@flutter test --coverage --test-randomize-ordering-seed=random && genhtml coverage/lcov.info -o coverage/html && open coverage/html/index.html

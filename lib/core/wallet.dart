@@ -6,9 +6,10 @@ import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
 import "package:web3kit/src/ethers/ethers_exceptions.dart";
-import "package:web3kit/src/js/ethers/ethers_errors.js.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
+import "package:web3kit/src/mocks/ethers_errors.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethers/ethers_error.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 
@@ -35,7 +36,7 @@ class Wallet {
   /// Emitted every time an user change their account in the wallet. Such as connect, disconnect, change account etc...
   ///
   /// In case of disconnection, it will emit a null event
-  Stream<Signer?> get signer => _signerStreamController.stream;
+  Stream<Signer?> get signerStream => _signerStreamController.stream;
 
   /// Get the list of installed wallets in the browser, it will include all wallets following the EIP 6963 standard.
   ///

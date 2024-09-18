@@ -7,5 +7,5 @@ class JSEthereumProvider {
 
   void on(JSString event, JSFunction callback) {}
 
-  JSPromise request(JSObject requestObject) => JSPromise();
+  JSPromise request(JSObject requestObject) => JSPromise<dynamic>(null);
 }
