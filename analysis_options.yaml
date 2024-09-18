@@ -8,3 +8,4 @@ linter:
     always_declare_return_types: true
     avoid_annotating_with_dynamic: false
     avoid_as: true
+    prefer_double_quotes: true

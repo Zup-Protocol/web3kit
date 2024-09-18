@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:web3kit/gen/assets.gen.dart';
-import 'package:web3kit/web3kit.dart';
-import 'package:zup_ui_kit/buttons/buttons.dart';
+import "package:flutter/material.dart";
+import "package:web3kit/src/gen/assets.gen.dart";
+import "package:web3kit/web3kit.dart";
+import "package:zup_ui_kit/buttons/buttons.dart";
 
 /// Build a button widget that allows the user to connect their wallet
 /// and update the UI accordingly
@@ -20,7 +20,7 @@ class _ConnectButtonState extends State<ConnectButton> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: Web3client.shared.wallet.signer,
+        stream: Wallet.shared.signer,
         builder: (context, snapshot) {
           return snapshot.data == null
               ? ZupPrimaryButton(

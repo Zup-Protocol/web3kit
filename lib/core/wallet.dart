@@ -1,28 +1,31 @@
-import 'dart:async';
-import 'dart:js_interop';
+import "dart:async";
 
-import 'package:web/web.dart' hide Cache;
-import 'package:web3kit/core/browser_provider.dart';
-import 'package:web3kit/core/cache.dart';
-import 'package:web3kit/core/core.dart';
-import 'package:web3kit/core/dtos/wallet_detail.dart';
-import 'package:web3kit/core/dtos/wallet_info.dart';
-import 'package:web3kit/core/enums/eip_6963_event.dart';
-import 'package:web3kit/core/enums/ethers_error_code.dart';
-import 'package:web3kit/core/ethereum_provider.dart';
-import 'package:web3kit/core/js/eip_6963/eip_6963_event.js.dart';
-import 'package:web3kit/core/js/ethers/ethers_errors.js.dart';
+import "package:collection/collection.dart";
+import "package:web3kit/core/core.dart";
+import "package:web3kit/src/cache.dart";
+import "package:web3kit/src/enums/eip_6963_event_enum.dart";
+import "package:web3kit/src/enums/ethers_error_code.dart";
+import "package:web3kit/src/ethers/ethers_exceptions.dart";
+import "package:web3kit/src/js/ethers/ethers_errors.js.dart";
+import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
+import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
+import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 
 /// Object to interact with Web3 wallets.
 /// Can perform actions like connect, send transactions, verify if specific wallet is installed, etc...
 class Wallet {
-  Wallet(this._browserProvider, this._cache) {
+  Wallet(this._browserProvider, this._cache, this._window) {
     _getInstalledWallets();
     _setupStreams();
   }
 
+  /// Access the singleton instance of the Wallet Object
+  static final Wallet shared = Web3Client.shared.wallet;
+
   final BrowserProvider _browserProvider;
   final Cache _cache;
+  final Window _window;
   final StreamController<Signer?> _signerStreamController = StreamController<Signer?>.broadcast();
   final List<WalletDetail> _installedWallets = [];
   EthereumProvider? _connectedProvider;
@@ -39,10 +42,18 @@ class Wallet {
   /// For more info about EIP 6963, please head over to https://eips.ethereum.org/EIPS/eip-6963
   List<WalletDetail> get installedWallets => List.unmodifiable(_installedWallets);
 
+  /// Get the current connected wallet provider.
+  ///
+  /// Returns null if no wallet is connected
+  EthereumProvider? get connectedProvider => _connectedProvider;
+
   void _setupStreams() async {
     for (var wallet in _installedWallets) {
       wallet.provider.onAccountsChanged((accounts) async {
-        if (accounts.isEmpty) return _notifySignerChange(null);
+        if (accounts.isEmpty) {
+          _connectedProvider = null;
+          return _notifySignerChange(null);
+        }
 
         _connectedProvider = wallet.provider;
         Signer signer = await _browserProvider.getSigner(wallet.provider);
@@ -54,7 +65,7 @@ class Wallet {
   void _notifySignerChange(Signer? signer) => _signerStreamController.add(signer);
 
   void _getInstalledWallets() {
-    final eventCallback = ((JSEIP6963Event event) {
+    final eventCallback = (JSEIP6963Event event) {
       _installedWallets.add(
         WalletDetail(
           info: WalletInfo(
@@ -65,11 +76,26 @@ class Wallet {
           provider: EthereumProvider(event.detail.provider),
         ),
       );
-    }).toJS;
+    }.toJS;
 
-    window.addEventListener(EIP6963Event.announceProvider.name, eventCallback);
-    window.dispatchEvent(JSEIP6963Event(EIP6963Event.requestProvider.name.toJS));
-    window.removeEventListener(EIP6963Event.announceProvider.name, eventCallback);
+    _window.addEventListener(EIP6963EventEnum.announceProvider.name, eventCallback);
+    _window.dispatchEvent(JSEIP6963Event(EIP6963EventEnum.requestProvider.name.toJS));
+    _window.removeEventListener(EIP6963EventEnum.announceProvider.name, eventCallback);
+  }
+
+  /// Connect to a wallet that was connected, and wasn't disconnected in the same session.
+  /// If there are no previous cached connections, it will return `null` as the Signer.
+  ///
+  /// This method is useful to keep a user wallet connected between sessions, without asking
+  /// him to connect again.
+  Future<Signer?> connectCachedWallet() async {
+    String? cachedConnectedWalletRDNS = await _cache.getConnectedWallet();
+
+    WalletDetail? connectedWallet = _installedWallets.firstWhereOrNull((wallet) {
+      return wallet.info.rdns == cachedConnectedWalletRDNS;
+    });
+
+    return connectedWallet != null ? connect(connectedWallet) : null;
   }
 
   /// Connect to a specific wallet.

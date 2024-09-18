@@ -1,9 +1,9 @@
-import 'dart:js_interop';
+import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 
-import 'package:web3kit/core/enums/ethers_error_code.dart';
-import 'package:web3kit/core/js/ethers/ethers_browser_provider.js.dart';
-import 'package:web3kit/core/js/ethers/ethers_errors.js.dart';
-import 'package:web3kit/core/js/ethers/ethers_signer.js.dart';
+import "package:web3kit/src/enums/ethers_error_code.dart";
+import "package:web3kit/src/js/ethers/ethers_browser_provider.js.dart";
+import "package:web3kit/src/js/ethers/ethers_errors.js.dart";
+import "package:web3kit/src/js/ethers/ethers_signer.js.dart";
 
 /// Signer of a connected Wallet.
 class Signer {

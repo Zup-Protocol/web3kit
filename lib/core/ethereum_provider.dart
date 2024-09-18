@@ -1,13 +1,15 @@
-import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
-
-import 'package:web3kit/core/enums/ethereum_event.dart';
-import 'package:web3kit/core/enums/ethereum_request.dart';
-import 'package:web3kit/core/js/ethereum_provider.js.dart';
+import "package:equatable/equatable.dart";
+import "package:web3kit/src/enums/ethereum_event.dart";
+import "package:web3kit/src/enums/ethereum_request.dart";
+import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethereum_provider.js.dart";
+import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
+import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart"
+    if (dart.library.html) "dart:js_interop_unsafe";
 
 /// Dart abstraction of the ethereum provider in the browser.
-class EthereumProvider {
-  EthereumProvider(this.jsEthereumProvider);
+class EthereumProvider extends Equatable {
+  const EthereumProvider(this.jsEthereumProvider);
 
   final JSEthereumProvider jsEthereumProvider;
 
@@ -46,4 +48,7 @@ class EthereumProvider {
 
     await jsEthereumProvider.request(requestObject).toDart;
   }
+
+  @override
+  List<Object?> get props => [jsEthereumProvider];
 }

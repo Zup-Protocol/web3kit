@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:web3kit/core/signer.dart';
-import 'package:web3kit/web3kit.dart';
-import 'package:zup_ui_kit/modals/zup_modal.dart';
+import "package:flutter/material.dart";
+import "package:web3kit/web3kit.dart";
+import "package:zup_ui_kit/modals/zup_modal.dart";
 
 /// Show a modal that allows the user to connect their wallet.
 ///
@@ -32,7 +31,7 @@ class ConnectModal extends StatelessWidget {
         padding: const EdgeInsets.all(20).copyWith(top: 0),
         child: Column(
           children: List.generate(
-            Web3client.shared.wallet.installedWallets.length,
+            Web3Client.shared.wallet.installedWallets.length,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: WalletButton(
@@ -41,7 +40,7 @@ class ConnectModal extends StatelessWidget {
 
                   Navigator.of(context).pop();
                 },
-                wallet: Web3client.shared.wallet.installedWallets[index],
+                wallet: Web3Client.shared.wallet.installedWallets[index],
               ),
             ),
           ),

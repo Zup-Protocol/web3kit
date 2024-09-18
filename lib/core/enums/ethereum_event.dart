@@ -1,1 +1,0 @@
-enum EthereumEvent { accountsChanged }

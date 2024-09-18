@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:web3kit/core/core.dart';
-import 'package:web3kit/core/dtos/wallet_detail.dart';
-import 'package:web3kit/cubits/wallet_button/wallet_button_cubit.dart';
-import 'package:web3kit/gen/assets.gen.dart';
-import 'package:web3kit/web3kit.dart';
-import 'package:zup_ui_kit/zup_ui_kit.dart';
+import "package:flutter/material.dart";
+import "package:flutter_animate/flutter_animate.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:flutter_svg/flutter_svg.dart";
+import "package:web3kit/src/cubits/wallet_button/wallet_button_cubit.dart";
+import "package:web3kit/src/gen/assets.gen.dart";
+import "package:web3kit/web3kit.dart";
+import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Show a button widget that allows the user to connect their wallet once they click it
 class WalletButton extends StatefulWidget {
@@ -23,7 +21,6 @@ class WalletButton extends StatefulWidget {
 class _WalletButtonState extends State<WalletButton> with TickerProviderStateMixin {
   bool isHovering = false;
 
-  final wallet = Web3client.shared.wallet;
   AnimationController? animationController;
 
   bool isIconSVG(String iconURI) => iconURI.trim().toLowerCase().startsWith("data:image/svg");
@@ -44,7 +41,7 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WalletButtonCubit(wallet),
+      create: (context) => WalletButtonCubit(Web3Client.shared.wallet),
       child: BlocConsumer<WalletButtonCubit, WalletButtonState>(
         listener: (context, state) => state.maybeWhen(
           loading: () => animationController?.loop(),
@@ -114,7 +111,7 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
                       ),
                     ),
                     const Spacer(),
-                    if (Web3client.shared.wallet.installedWallets.contains(widget.wallet))
+                    if (Web3Client.shared.wallet.installedWallets.contains(widget.wallet))
                       Text(
                         Web3KitLocalizations.of(context).installed,
                         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300, color: ZupColors.gray),

@@ -1,11 +1,13 @@
-import 'dart:js_interop';
+import "package:web3kit/core/core.dart";
+import "package:web3kit/src/js/ethers/ethers_browser_provider.js.dart";
+import "package:web3kit/src/js/ethers/ethers_signer.js.dart";
 
-import 'package:web3kit/core/core.dart';
-import 'package:web3kit/core/ethereum_provider.dart';
-import 'package:web3kit/core/js/ethers/ethers_browser_provider.js.dart';
-import 'package:web3kit/core/js/ethers/ethers_signer.js.dart';
+import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 
 class BrowserProvider {
+  /// Access the singleton instance of the BrowserProvider
+  static BrowserProvider get shared => Web3Client.shared.browserProvider;
+
   /// Get a [Signer] for a given [wallet].
   ///
   /// The returned [Signer] is connected to the given [wallet].

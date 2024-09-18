@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:random_avatar/random_avatar.dart';
-import 'package:web3kit/core/core.dart';
-import 'package:web3kit/cubits/connected_wallet_button/connected_wallet_button_cubit.dart';
-import 'package:web3kit/ui/account_modal.dart';
-import 'package:web3kit/web3client.dart';
-import 'package:zup_ui_kit/zup_ui_kit.dart';
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:random_avatar/random_avatar.dart";
+import "package:web3kit/core/core.dart";
+import "package:web3kit/src/cubits/connected_wallet_button/connected_wallet_button_cubit.dart";
+import "package:web3kit/ui/account_modal.dart";
+import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Build a widget that shows the user's connected Wallet
 class ConnectedWalletButton extends StatefulWidget {
@@ -22,7 +21,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
 
   @override
   void initState() {
-    Web3client.shared.wallet.signer.listen((signer) {
+    Web3Client.shared.wallet.signer.listen((signer) {
       if (signer != null && signer != widget.signer) {
         if (mounted) cubit?.loadSigner(signer);
       }
