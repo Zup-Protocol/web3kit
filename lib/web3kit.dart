@@ -1,11 +1,15 @@
 library web3kit;
 
-import "dart:js_interop";
+import "package:web3kit/src/inject.dart";
 
-extension type Window(JSObject _) implements JSObject {}
+export "core/core.dart";
+export "src/l10n/gen/app_localizations.dart";
+export "ui/ui.dart";
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+class Web3Kit {
+  Web3Kit();
+
+  /// Initializes the client to be able to use it.
+  /// This function should be called only once
+  static Future<void> initialize() async => await Inject.setup();
 }

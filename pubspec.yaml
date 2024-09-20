@@ -1,6 +1,7 @@
 name: web3kit
 description: "Flutter UI Kit & Library to interact with Web3 seamlessly"
 version: 0.0.1
+publish_to: "none"
 homepage: https://www.zupprotocol.xyz
 repository: https://github.com/Zup-Protocol/web3kit
 
@@ -8,12 +9,51 @@ environment:
   sdk: ^3.5.2
 
 dependencies:
+  collection: ^1.18.0
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
+  flutter_animate: ^4.5.0
+  flutter_bloc: ^8.1.6
+  flutter_localizations:
+    sdk: flutter
+  flutter_svg: ^2.0.10+1
+  freezed: ^2.5.7
+  freezed_annotation: ^2.4.4
+  get_it: ^7.7.0
+  intl: ^0.19.0
+  random_avatar: ^0.0.8
+  shared_preferences: ^2.3.2
+  url_launcher: ^6.3.0
+  web: ^1.0.0
+  zup_ui_kit:
+    path: ../zup_ui_kit
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_gen_runner: ^5.7.0
+  build_runner: ^2.4.12
+  test: ^1.25.7
+  mocktail: ^1.0.4
+  shared_preferences_platform_interface: ^2.4.1
+  golden_toolkit: ^0.15.0
+  mocktail_image_network: ^1.2.0
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 200
+  integrations:
+    flutter_svg: true
+  assets:
+    enabled: true
+  colors:
+    enabled: false
 
 flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/images/

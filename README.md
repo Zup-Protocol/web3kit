@@ -1,39 +1,63 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Web3Kit
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Web3Kit is a core & UI library for building web3 applications with Flutter Web. It contains the most useful features for building web3 applications. And a rich UI Kit to build web3 applications with Flutter Web easily.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+Behind the scenes, Web3Kit uses [Ethers.js](https://docs.ethers.io/v6/) to interact with the Ethereum network. Web3Kit also uses dart interop to interact directly with the browser, Ethers.js and the wallets.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Installation & Initialization
 
-## Features
+To get started with Web3Kit, follow these steps:
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+### 1. Add the package in `pubspec.yaml`
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```bash
+flutter pub add web3kit
 ```
 
-## Additional information
+### 2. Add the following Script to your `index.html`
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```html
+<script type="module">
+  import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
+  window.ethers = ethers;
+</script>
+```
+
+It should be placed inside the `<body>` tag. Like this:
+
+```html
+<body>
+  <script type="module">
+    import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
+    window.ethers = ethers;
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+```
+
+### 3. Add Web3Kit Localizations inside Material App:
+
+To make use of Web3Kit UI Kit, you will need to delegate Web3Kit Localizations also, like this:
+
+```dart
+localizationsDelegates: const [Web3KitLocalizations.delegate],
+```
+
+### 4. Initialize Web3Kit
+
+To use any feature of the Web3Kit, you first need to initialize it:
+
+```dart
+await Web3Kit.initialize();
+```
+
+This initialization needs to be done only once. So you can add it in your `main.dart`:
+
+```dart
+Future<void> main() async {
+  await Web3Kit.initialize(); // recommended to initialize Web3Kit before running the app
+
+  runApp(const MyApp());
+}
+```
