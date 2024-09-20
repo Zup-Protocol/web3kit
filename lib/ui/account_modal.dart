@@ -82,10 +82,7 @@ class AccountModal extends StatelessWidget {
                       fixedIcon: false,
                       mainAxisSize: MainAxisSize.max,
                       icon: Assets.icons.cableConnectorSlash.svg(package: "web3kit"),
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        await Wallet.shared.disconnect();
-                      },
+                      onPressed: () async => await Wallet.shared.disconnect(),
                     )
                   ],
                 );
