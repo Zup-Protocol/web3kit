@@ -26,18 +26,15 @@ void main() {
     );
     wallet = WalletMock();
 
-    await Web3Client.rawInitialize(
-        automaticallyConnectWallet: false, browserProvider: BrowserProviderMock(), wallet: wallet);
-
     registerFallbackValue(walletDetail);
 
     when(() => wallet.installedWallets).thenReturn([walletDetail]);
     when(() => wallet.connect(any())).thenAnswer((_) async => SignerMock());
+
+    mockInjections(customWallet: wallet);
   });
 
-  tearDown(() {
-    Web3Client.dispose();
-  });
+  tearDown(() => resetInjections());
 
   Future<DeviceBuilder> goldenBuilder({Function(Signer singer)? onConnect, WalletDetail? customWalletDetail}) async =>
       await goldenDeviceBuilder(WalletButton(

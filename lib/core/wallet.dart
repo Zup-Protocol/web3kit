@@ -6,6 +6,7 @@ import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
 import "package:web3kit/src/ethers/ethers_exceptions.dart";
+import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
 import "package:web3kit/src/mocks/ethers_errors.js_mock.dart"
@@ -22,7 +23,7 @@ class Wallet {
   }
 
   /// Access the singleton instance of the Wallet Object
-  static Wallet get shared => Web3Client.shared.wallet;
+  static Wallet get shared => Inject.shared.wallet;
 
   final BrowserProvider _browserProvider;
   final Cache _cache;
@@ -30,6 +31,7 @@ class Wallet {
   final StreamController<Signer?> _signerStreamController = StreamController<Signer?>.broadcast();
   final List<WalletDetail> _installedWallets = [];
   EthereumProvider? _connectedProvider;
+  Signer? _signer;
 
   /// Stream of the current connected signer
   ///
@@ -37,6 +39,11 @@ class Wallet {
   ///
   /// In case of disconnection, it will emit a null event
   Stream<Signer?> get signerStream => _signerStreamController.stream;
+
+  /// Get the current signer.
+  ///
+  /// If no signer is connected, it will return null
+  Signer? get signer => _signer;
 
   /// Get the list of installed wallets in the browser, it will include all wallets following the EIP 6963 standard.
   ///
@@ -53,17 +60,20 @@ class Wallet {
       wallet.provider.onAccountsChanged((accounts) async {
         if (accounts.isEmpty) {
           _connectedProvider = null;
-          return _notifySignerChange(null);
+          return _updateSigner(null);
         }
 
         _connectedProvider = wallet.provider;
         Signer signer = await _browserProvider.getSigner(wallet.provider);
-        _notifySignerChange(signer);
+        _updateSigner(signer);
       });
     }
   }
 
-  void _notifySignerChange(Signer? signer) => _signerStreamController.add(signer);
+  void _updateSigner(Signer? signer) {
+    _signer = signer;
+    _signerStreamController.add(signer);
+  }
 
   void _getInstalledWallets() {
     final eventCallback = (JSEIP6963Event event) {
@@ -106,7 +116,7 @@ class Wallet {
     try {
       final signer = await _browserProvider.getSigner(wallet.provider);
       _connectedProvider = wallet.provider;
-      _notifySignerChange(signer);
+      _updateSigner(signer);
       _cache.setWalletConnectionState(wallet.info.rdns);
       return signer;
     } catch (e) {
@@ -122,7 +132,7 @@ class Wallet {
 
   /// Disconnect from the current connected wallet
   Future<void> disconnect() async {
-    _notifySignerChange(null);
+    _updateSigner(null);
 
     await _cache.setWalletConnectionState(null);
 

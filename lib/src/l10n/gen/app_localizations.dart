@@ -95,6 +95,24 @@ abstract class Web3KitLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// No description provided for @connectModalNoWalletsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Wallets Found...'**
+  String get connectModalNoWalletsFound;
+
+  /// No description provided for @connectModalNoWalletsFoundDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like you don’t have a wallet installed. Please install one to proceed'**
+  String get connectModalNoWalletsFoundDescription;
+
+  /// No description provided for @whatIsAWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s a wallet?'**
+  String get whatIsAWallet;
+
   /// No description provided for @installed.
   ///
   /// In en, this message translates to:

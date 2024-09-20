@@ -69,10 +69,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
                   avatarSeed: address,
                 ),
               ),
-              onPressed: () => AccountModal.show(
-                context,
-                walletAddress: cubit?.signerAddress ?? "",
-              ),
+              onPressed: () => AccountModal.show(context),
             ),
           );
         },
@@ -82,6 +79,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
 
   Widget buttonContent({String title = "", bool isLoading = false, String avatarSeed = "123"}) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
             height: 26,

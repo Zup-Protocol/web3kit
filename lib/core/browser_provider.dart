@@ -1,4 +1,5 @@
 import "package:web3kit/core/core.dart";
+import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/ethers_browser_provider.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethers/ethers_browser_provider.js.dart";
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart"
@@ -7,7 +8,7 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 
 class BrowserProvider {
   /// Access the singleton instance of the BrowserProvider
-  static BrowserProvider get shared => Web3Client.shared.browserProvider;
+  static BrowserProvider get shared => Inject.shared.browserProvider;
 
   /// Get a [Signer] for a given [wallet].
   ///

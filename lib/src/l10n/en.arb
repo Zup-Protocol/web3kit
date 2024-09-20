@@ -1,5 +1,8 @@
 {
     "@@locale": "en",
+    "connectModalNoWalletsFound": "No Wallets Found...",
+    "connectModalNoWalletsFoundDescription": "It looks like you don’t have a wallet installed. Please install one to proceed",
+    "whatIsAWallet": "What's a wallet?",
     "installed": "Installed",
     "unknownAddress": "Unknown Address",
     "connectWallet": "Connect Wallet",

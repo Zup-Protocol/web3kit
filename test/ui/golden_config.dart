@@ -23,11 +23,11 @@ class GoldenConfig {
     );
   }
 
-  static Widget localizationsWrapper(Widget child) {
-    return MaterialApp(
-      localizationsDelegates: const [Web3KitLocalizations.delegate],
-      home: child,
-    );
+  static Widget Function(Widget) localizationsWrapper() {
+    return (child) => MaterialApp(
+          localizationsDelegates: const [Web3KitLocalizations.delegate],
+          home: child,
+        );
   }
 }
 

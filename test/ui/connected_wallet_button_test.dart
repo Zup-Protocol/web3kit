@@ -19,14 +19,14 @@ void main() {
     browserProvider = BrowserProviderMock();
     wallet = WalletMock();
 
-    Web3Client.rawInitialize(automaticallyConnectWallet: false, browserProvider: browserProvider, wallet: wallet);
+    mockInjections(customBrowserProvider: browserProvider, customWallet: wallet);
 
     when(() => wallet.signerStream).thenAnswer((_) => const Stream.empty());
     when(() => wallet.signerStream).thenAnswer((_) => const Stream.empty());
     when(() => signer.address).thenAnswer((_) async => "0x99E3CfADCD8Feecb5DdF91f88998cFfB3145F78c");
   });
 
-  tearDown(() => Web3Client.dispose());
+  tearDown(() => resetInjections());
 
   Future<DeviceBuilder> goldenBuilder({Signer? customSigner}) async => goldenDeviceBuilder(ConnectedWalletButton(
         signer: customSigner ?? signer,
@@ -115,7 +115,11 @@ void main() {
 
   zGoldenTest("When tapping the button, it should open the account modal",
       goldenFileName: "connected_wallet_button_click", (tester) async {
-    await tester.pumpDeviceBuilder(await goldenBuilder(), wrapper: (child) => GoldenConfig.localizationsWrapper(child));
+    final signer = SignerMock();
+    when(() => wallet.signer).thenReturn(signer);
+    when(() => signer.address).thenAnswer((_) async => "0x99E3CfADCD8Feecb5DdF91f88998cFfB3145F78c");
+
+    await tester.pumpDeviceBuilder(await goldenBuilder(), wrapper: GoldenConfig.localizationsWrapper());
 
     await tester.tap(find.byKey(const Key("connected-wallet-button")));
     await tester.pumpAndSettle();

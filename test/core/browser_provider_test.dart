@@ -1,6 +1,7 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
 import "package:web3kit/core/core.dart";
+import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/ethers_browser_provider.js_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart";
 
@@ -11,15 +12,15 @@ void main() {
 
   setUp(() {
     sut = BrowserProvider();
+    mockInjections(customBrowserProvider: sut);
   });
 
-  test("When calling `shared` it should return a BrowserProvider instance set in the Web3Client", () async {
-    final browserProvider = BrowserProviderMock();
+  tearDown(() => resetInjections());
 
-    await Web3Client.rawInitialize(
-        automaticallyConnectWallet: false, browserProvider: browserProvider, wallet: WalletMock());
+  test("When calling `shared` it should return a BrowserProvider instance", () async {
+    Inject.getInjections();
 
-    expect(Web3Client.shared.browserProvider.hashCode, browserProvider.hashCode);
+    expect(BrowserProvider.shared.hashCode, sut.hashCode);
   });
 
   test("""when calling `getSigner` it should create an instance of the

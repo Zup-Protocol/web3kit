@@ -7,6 +7,16 @@ class Web3KitLocalizationsEn extends Web3KitLocalizations {
   Web3KitLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get connectModalNoWalletsFound => 'No Wallets Found...';
+
+  @override
+  String get connectModalNoWalletsFoundDescription =>
+      'It looks like you don’t have a wallet installed. Please install one to proceed';
+
+  @override
+  String get whatIsAWallet => 'What\'s a wallet?';
+
+  @override
   String get installed => 'Installed';
 
   @override

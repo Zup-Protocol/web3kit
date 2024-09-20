@@ -6,6 +6,7 @@ import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_event.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
 import "package:web3kit/src/ethers/ethers_exceptions.dart";
+import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_detail.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_detail_info.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart";
@@ -47,7 +48,11 @@ void main() {
     registerFallbackValue(JSFunction(() {}));
     registerFallbackValue(const JSString(""));
     registerFallbackValue(EthereumProviderMock());
+
+    mockInjections(customBrowserProvider: browserProvider, customWallet: sut);
   });
+
+  tearDown(() => resetInjections());
 
   test("When instantiating the Wallet object, it should get the list of installed wallets in the browser", () {
     const walletsAmount = 5;
@@ -533,9 +538,49 @@ void main() {
     await sut.disconnect(); // if it throws, the test will fail
   });
 
-  test("When calling `shared` it should return the wallet instance from the web3 client", () async {
-    await Web3Client.rawInitialize(automaticallyConnectWallet: false, browserProvider: browserProvider, wallet: sut);
+  test("When calling `signer` it should return the current connected signer", () async {
+    final provider = EthereumProviderMock();
+    final wallet = WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: provider);
+    final expectedSigner = SignerMock();
+    const expectedSignerAddress = "expectedSignerAddress";
 
-    expect(Wallet.shared, sut);
+    when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => expectedSigner);
+    when(() => expectedSigner.address).thenAnswer((_) async => expectedSignerAddress);
+
+    await sut.connect(wallet);
+
+    expect(await sut.signer?.address, expectedSignerAddress);
+  });
+
+  test("When calling `signer` after the signer has changed it should return the new signer", () async {
+    final provider = EthereumProviderMock();
+    final oldWallet = WalletDetail(info: const WalletInfo(name: "old", icon: "old", rdns: "old"), provider: provider);
+    final newWallet = WalletDetail(info: const WalletInfo(name: "new", icon: "new", rdns: "new"), provider: provider);
+    final oldSigner = SignerMock();
+    final newSigner = SignerMock();
+    const oldSignerAddress = "oldSignerAddress";
+    const newSignerAddress = "newSignerAddress";
+
+    when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => oldSigner);
+    when(() => oldSigner.address).thenAnswer((_) async => oldSignerAddress);
+
+    await sut.connect(oldWallet);
+
+    expect(await sut.signer?.address, oldSignerAddress); // making sure the signer is the old before the new
+
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => newSigner);
+    when(() => newSigner.address).thenAnswer((_) async => newSignerAddress);
+
+    await sut.connect(newWallet);
+
+    expect(await sut.signer?.address, newSignerAddress);
+  });
+
+  test("When calling `shared` it should return the wallet instance", () async {
+    Inject.getInjections();
+
+    expect(Wallet.shared.hashCode, sut.hashCode);
   });
 }
