@@ -11,8 +11,13 @@ import "package:zup_ui_kit/zup_ui_kit.dart";
 class WalletButton extends StatefulWidget {
   const WalletButton({super.key, required this.walletDetail, required this.onConnect, this.width});
 
+  /// The details of the wallet to connect, following the [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963)
   final WalletDetail walletDetail;
+
+  /// Called once the user connect his wallet. The [Signer] is the signer that is now connected to the application.
   final Function(Signer signer) onConnect;
+
+  /// The width of the button. If null, the button will take the minimum space to fit its content
   final double? width;
 
   @override

@@ -11,7 +11,10 @@ import "package:zup_ui_kit/zup_ui_kit.dart";
 class ConnectedWalletButton extends StatefulWidget {
   const ConnectedWalletButton({super.key, required this.signer, this.width});
 
+  /// The current connected signer
   final Signer signer;
+
+  /// The width of the button. If not passed it will use the minimum width to accommodate the button content
   final double? width;
 
   @override

@@ -6,8 +6,10 @@ import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/src/l10n/gen/app_localizations.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
-/// Show a modal that contain's the user's connected wallet information
-/// call `AccountModal.show()` to open the modal from anywhere
+/// Show a modal that contain's the user's connected wallet information.
+/// Call `AccountModal.show()` to open the modal from anywhere
+///
+/// `![Warning]` the modal will not open if the application is not connected to a wallet
 class AccountModal extends StatelessWidget {
   const AccountModal({super.key});
 

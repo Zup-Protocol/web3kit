@@ -10,9 +10,9 @@ class BrowserProvider {
   /// Access the singleton instance of the BrowserProvider
   static BrowserProvider get shared => Inject.shared.browserProvider;
 
-  /// Get a [Signer] for a given [wallet].
+  /// Get a [Signer] for a given [walletProvider].
   ///
-  /// The returned [Signer] is connected to the given [wallet].
+  /// The returned [Signer] is connected to the given [walletProvider].
   ///
   /// If the wallet is not connected, it will prompt the user to connect it.
   Future<Signer> getSigner(EthereumProvider walletProvider) async {
