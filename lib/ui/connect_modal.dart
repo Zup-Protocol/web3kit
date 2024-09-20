@@ -31,16 +31,17 @@ class ConnectModal extends StatelessWidget {
         padding: const EdgeInsets.all(20).copyWith(top: 0),
         child: Column(
           children: List.generate(
-            Web3Client.shared.wallet.installedWallets.length,
+            Wallet.shared.installedWallets.length,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: WalletButton(
+                key: Key("wallet-button-$index"),
                 onConnect: (signer) {
                   if (onConnectWallet != null) onConnectWallet!(signer);
 
                   Navigator.of(context).pop();
                 },
-                wallet: Web3Client.shared.wallet.installedWallets[index],
+                walletDetail: Wallet.shared.installedWallets[index],
               ),
             ),
           ),

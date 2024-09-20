@@ -1,4 +1,7 @@
+import "dart:typed_data";
+
 import "package:mocktail/mocktail.dart";
+import "package:mocktail_image_network/mocktail_image_network.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:web3kit/core/browser_provider.dart";
 import "package:web3kit/core/ethereum_provider.dart";
@@ -50,4 +53,8 @@ class CustomJSEthereumProviderMock extends JSEthereumProvider {
 
     return JSPromise<dynamic>(null);
   }
+}
+
+T mockHttpImage<T>(T Function() on, {Uint8List? overrideImage}) {
+  return mockNetworkImages(on, imageBytes: overrideImage);
 }

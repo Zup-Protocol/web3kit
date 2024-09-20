@@ -1,16 +1,18 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:random_avatar/random_avatar.dart";
-import "package:web3kit/core/core.dart";
 import "package:web3kit/src/cubits/connected_wallet_button/connected_wallet_button_cubit.dart";
-import "package:web3kit/ui/account_modal.dart";
+import "package:web3kit/web3kit.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Build a widget that shows the user's connected Wallet
 class ConnectedWalletButton extends StatefulWidget {
-  const ConnectedWalletButton({super.key, required this.signer});
+  const ConnectedWalletButton({super.key, required this.signer, this.width});
 
   final Signer signer;
+  final double? width;
 
   @override
   State<ConnectedWalletButton> createState() => _ConnectedWalletButtonState();
@@ -18,15 +20,23 @@ class ConnectedWalletButton extends StatefulWidget {
 
 class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
   ConnectedWalletButtonCubit? cubit;
+  StreamSubscription<Signer?>? _signerStream;
 
   @override
   void initState() {
-    Web3Client.shared.wallet.signerStream.listen((signer) {
-      if (signer != null && signer != widget.signer) {
-        if (mounted) cubit?.loadSigner(signer);
-      }
+    _signerStream = Wallet.shared.signerStream.listen((signer) {
+      if (!mounted) return;
+      if (signer == null || signer == widget.signer) return;
+
+      cubit?.loadSigner(signer);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _signerStream?.cancel();
+    super.dispose();
   }
 
   @override
@@ -37,27 +47,32 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
         builder: (context, state) {
           cubit = context.read<ConnectedWalletButtonCubit>();
 
-          return MaterialButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: ZupColors.gray5),
-            ),
-            color: ZupColors.white,
-            hoverElevation: 14,
-            animationDuration: const Duration(milliseconds: 700),
-            elevation: 0,
-            height: 50,
-            padding: const EdgeInsets.all(20),
-            child: state.maybeWhen(
-              orElse: () => buttonContent(isLoading: true),
-              success: (address, ensName) => buttonContent(
-                title: ensName ?? address.shortAddress(prefixAndSuffixLength: 4),
-                avatarSeed: address,
+          return SizedBox(
+            width: widget.width,
+            child: MaterialButton(
+              key: const Key("connected-wallet-button"),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: ZupColors.gray5),
               ),
-            ),
-            onPressed: () => AccountModal.show(
-              context,
-              walletAddress: cubit?.signerAddress ?? "",
+              color: ZupColors.white,
+              hoverElevation: 14,
+              animationDuration: const Duration(milliseconds: 700),
+              elevation: 0,
+              height: 50,
+              padding: const EdgeInsets.all(20),
+              child: state.maybeWhen(
+                orElse: () => buttonContent(isLoading: true),
+                error: () => buttonContent(title: Web3KitLocalizations.of(context).unknownAddress),
+                success: (address, ensName) => buttonContent(
+                  title: ensName ?? address.shortAddress(prefixAndSuffixLength: 4),
+                  avatarSeed: address,
+                ),
+              ),
+              onPressed: () => AccountModal.show(
+                context,
+                walletAddress: cubit?.signerAddress ?? "",
+              ),
             ),
           );
         },
@@ -65,7 +80,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
     );
   }
 
-  Widget buttonContent({String title = "", bool isLoading = false, String avatarSeed = ""}) {
+  Widget buttonContent({String title = "", bool isLoading = false, String avatarSeed = "123"}) {
     return Row(
       children: [
         SizedBox(

@@ -10,6 +10,9 @@ class Web3KitLocalizationsEn extends Web3KitLocalizations {
   String get installed => 'Installed';
 
   @override
+  String get unknownAddress => 'Unknown Address';
+
+  @override
   String get connectWallet => 'Connect Wallet';
 
   @override

@@ -22,7 +22,7 @@ class Wallet {
   }
 
   /// Access the singleton instance of the Wallet Object
-  static final Wallet shared = Web3Client.shared.wallet;
+  static Wallet get shared => Web3Client.shared.wallet;
 
   final BrowserProvider _browserProvider;
   final Cache _cache;

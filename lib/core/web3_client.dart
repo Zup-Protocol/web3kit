@@ -25,6 +25,7 @@ class Web3Client {
   /// // GOOD:
   /// Wallet.shared
   /// ```
+  @internal
   static Web3Client get shared {
     if (_shared == null) {
       throw "Web3client has not been initialized. Please initialize it with `Web3client.initialize()`, before using the client";

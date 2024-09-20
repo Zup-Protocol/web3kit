@@ -12,6 +12,7 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 coverage/
+test/**/failures
 
 # IntelliJ related
 *.iml

@@ -19,7 +19,10 @@ class ConnectedWalletButtonCubit extends Cubit<ConnectedWalletButtonState> {
 
     try {
       signerAddress = await signer.address;
-      signerENS = await signer.ensName;
+
+      try {
+        signerENS = await signer.ensName;
+      } catch (_) {}
 
       emit(ConnectedWalletButtonState.success(signerAddress, signerENS));
     } catch (e) {

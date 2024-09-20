@@ -101,6 +101,12 @@ abstract class Web3KitLocalizations {
   /// **'Installed'**
   String get installed;
 
+  /// No description provided for @unknownAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Address'**
+  String get unknownAddress;
+
   /// No description provided for @connectWallet.
   ///
   /// In en, this message translates to:

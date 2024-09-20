@@ -37,6 +37,8 @@ dev_dependencies:
   test: ^1.25.7
   mocktail: ^1.0.4
   shared_preferences_platform_interface: ^2.4.1
+  golden_toolkit: ^0.15.0
+  mocktail_image_network: ^1.2.0
 
 flutter_gen:
   output: lib/gen/
@@ -50,5 +52,6 @@ flutter_gen:
 
 flutter:
   generate: true
+  uses-material-design: true
   assets:
     - assets/icons/
