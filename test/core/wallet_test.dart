@@ -105,7 +105,7 @@ void main() {
       expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (_) => null)));
 
       for (var i = 0; i < walletsAmount; i++) {
-        providers[i].callRegisteredEvent(EthereumEvent.accountsChanged.name, JSArray<JSString>(const []));
+        providers[i].callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
       }
 
       expect(wallet.connectedProvider, null);
@@ -132,7 +132,7 @@ void main() {
 
       expectLater(wallet.signerStream, emits(null));
 
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, JSArray<JSString>(const []));
+      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
 
       expect(wallet.connectedProvider, null);
     });
@@ -163,7 +163,7 @@ void main() {
 
       expectLater(wallet.signerStream, emits(null));
 
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, JSArray<JSString>(const []));
+      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
 
       expect(wallet.connectedProvider, null);
     });
