@@ -47,9 +47,9 @@ class JSFunction {
 
 @internal
 class JSArray<T> extends Equatable implements JSAny {
-  JSArray(this.list);
+  const JSArray(this.list);
 
-  List<T> list;
+  final List<T> list;
 
   @override
   List<Object?> get props => [list];
