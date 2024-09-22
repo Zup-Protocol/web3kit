@@ -117,7 +117,11 @@ class Wallet {
     }
   }
 
-  Future<void> addNetwork() async {}
+  Future<void> addNetwork(ChainInfo network) async {
+    assert(_connectedProvider != null, "Wallet should be connected to add network");
+
+    await _connectedProvider!.addChain(network);
+  }
 
   /// Connect to a wallet that was connected, and wasn't disconnected in the same session.
   /// If there are no previous cached connections, it will return `null` as the Signer.
@@ -157,7 +161,7 @@ class Wallet {
 
   /// Disconnect from the current connected wallet
   Future<void> disconnect() async {
-    _updateSigner(null);
+    if (signer != null) _updateSigner(null);
 
     await _cache.setWalletConnectionState(null);
 

@@ -9,4 +9,8 @@ void main() {
   test("`.method` extension should return the correct method string for `switchEthereumChain`", () {
     expect(EthereumRequest.switchEthereumChain.method, "wallet_switchEthereumChain");
   });
+
+  test("`.method` extension should return the correct method string for `addEthereumChain`", () {
+    expect(EthereumRequest.addEthereumChain.method, "wallet_addEthereumChain");
+  });
 }

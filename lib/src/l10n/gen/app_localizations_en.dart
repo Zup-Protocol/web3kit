@@ -39,6 +39,10 @@ class Web3KitLocalizationsEn extends Web3KitLocalizations {
       'Choose how you want to connect to use the protocol!';
 
   @override
+  String get networkSwitcherErrorDescription =>
+      'Unable to switch the network in your wallet. Please switch the network manually!';
+
+  @override
   String walletButtonConnectError(String wallet) {
     return 'An error occurred while attempting to connect to $wallet!';
   }

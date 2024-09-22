@@ -155,6 +155,12 @@ abstract class Web3KitLocalizations {
   /// **'Choose how you want to connect to use the protocol!'**
   String get connectModalDescription;
 
+  /// No description provided for @networkSwitcherErrorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to switch the network in your wallet. Please switch the network manually!'**
+  String get networkSwitcherErrorDescription;
+
   /// No description provided for @walletButtonConnectError.
   ///
   /// In en, this message translates to:

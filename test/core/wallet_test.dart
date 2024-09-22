@@ -50,6 +50,7 @@ void main() {
     registerFallbackValue(JSFunction(() {}));
     registerFallbackValue(const JSString(""));
     registerFallbackValue(EthereumProviderMock());
+    registerFallbackValue(const ChainInfo(hexChainId: ""));
 
     mockInjections(customBrowserProvider: browserProvider, customWallet: sut);
 
@@ -85,11 +86,12 @@ void main() {
   group("""After the Wallet object is instantiated,
    the signer stream should be set, listening for 
    the accountsChanged event""", () {
-    test("It should listen for all installed wallets", () async {
+    test("It should listen for the accountsChanged event for all installed wallets", () async {
       const walletsAmount = 5;
       final List<CustomJSEthereumProviderMock> providers =
           List.generate(walletsAmount, (_) => CustomJSEthereumProviderMock());
       final window0 = Window();
+      const signerAddress = "0x123";
 
       for (var i = 0; i < walletsAmount; i++) {
         window0.setAddEventListenerCallbackParam(JSEIP6963Event(
@@ -107,39 +109,12 @@ void main() {
 
       final wallet = Wallet(browserProvider, cache, window0);
 
-      expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (_) => null)));
+      expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (_) => anything)));
 
       for (var i = 0; i < walletsAmount; i++) {
-        await providers[i].callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
+        await providers[i]
+            .callRegisteredEvent(EthereumEvent.accountsChanged.name, JSArray<JSString>([signerAddress.toJS]));
       }
-
-      expect(wallet.connectedProvider, null);
-    });
-    test("""If the accountsChanged array callback is empty,
-    it should emit a null event and set the connected
-    provider to null""", () async {
-      final provider = CustomJSEthereumProviderMock();
-      final window0 = Window();
-
-      window0.setAddEventListenerCallbackParam(JSEIP6963Event(
-        JSString(EIP6963EventEnum.requestProvider.name),
-        JSEIP6963Detail(
-          const JSEIP6963DetailInfo(
-            JSString("Wallet 1"),
-            JSString("Wallet 1 icon"),
-            JSString("Wallet 1 rdns"),
-          ),
-          provider,
-        ),
-      ));
-
-      final wallet = Wallet(browserProvider, cache, window0);
-
-      expectLater(wallet.signerStream, emits(null));
-
-      await provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
-
-      expect(wallet.connectedProvider, null);
     });
 
     test("""If the accountsChanged array callback is empty,
@@ -503,7 +478,13 @@ void main() {
   });
 
   test("When calling `disconnect` it should emit a signer changed event with null", () async {
+    final walletDetails = WalletDetail(
+      info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"),
+      provider: EthereumProviderMock(),
+    );
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
+
+    await sut.connect(walletDetails);
 
     expectLater(sut.signerStream, emits(null));
 
@@ -655,5 +636,24 @@ void main() {
     await sut.connect(walletDetail);
 
     expect(() async => await sut.switchNetwork(chainId), throwsA(randomError));
+  });
+
+  test("when calling `addNetwork` without a connected provider, it should throw an assertion error", () async {
+    expect(() async => await sut.addNetwork(const ChainInfo(hexChainId: "as")), throwsAssertionError);
+  });
+
+  test("When calling `addNetwork` it should call the provider's `addChain` method", () async {
+    const chainId = "0x1";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+    const chainInfo = ChainInfo(hexChainId: chainId);
+
+    when(() => ethereumProvider.addChain(any())).thenAnswer((_) async => () {});
+
+    await sut.connect(walletDetail);
+    await sut.addNetwork(chainInfo);
+
+    verify(() => ethereumProvider.addChain(chainInfo)).called(1);
   });
 }
