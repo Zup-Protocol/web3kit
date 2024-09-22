@@ -46,8 +46,8 @@ class CustomJSEthereumProviderMock extends JSEthereumProvider {
   Map<String, JSFunction> callbacks = {};
   JSObject? lastRequestObject;
 
-  void callRegisteredEvent(String event, dynamic callbackParam) {
-    callbacks[event]!.dartFunction.call(callbackParam);
+  Future<void> callRegisteredEvent(String event, dynamic callbackParam) async {
+    await callbacks[event]!.dartFunction.call(callbackParam);
   }
 
   @override

@@ -8,7 +8,7 @@ class JS {
 }
 
 @internal
-class JSObject extends Equatable {
+class JSObject extends Equatable implements JSAny {
   bool isA<T extends JSObject?>() => true;
 
   final Map<JSAny, JSAny?> properties = {};
@@ -56,6 +56,15 @@ class JSArray<T> extends Equatable implements JSAny {
 }
 
 @internal
+class JSNumber extends Equatable implements JSAny {
+  final num value;
+  const JSNumber(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
+@internal
 extension JSPromiseToFuture<T> on JSPromise<T> {
   Future<T> get toDart async => await Future.value(value);
 }
@@ -83,4 +92,14 @@ extension JSArrayToList<T> on JSArray<T> {
 @internal
 extension ListToJSArray<T> on List<T> {
   JSArray<T> jsify() => JSArray<T>(this);
+}
+
+@internal
+extension JSNumberToInt on JSNumber {
+  int get toDartInt => value.toInt();
+}
+
+@internal
+extension IntToJSNumber on int {
+  JSNumber get toJS => JSNumber(this);
 }

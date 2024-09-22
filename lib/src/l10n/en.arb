@@ -10,6 +10,7 @@
     "disconnectWallet": "Disconnect Wallet",
     "addressCopiedText": "Address copied to clipboard",
     "connectModalDescription": "Choose how you want to connect to use the protocol!",
+    "networkSwitcherErrorDescription": "Unable to switch the network in your wallet. Please switch the network manually!",
     "walletButtonConnectError": "An error occurred while attempting to connect to {wallet}!",
     "@walletButtonConnectError": {
         "placeholders": {

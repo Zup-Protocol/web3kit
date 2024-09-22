@@ -31,6 +31,7 @@ void main() {
   Future<DeviceBuilder> goldenBuilder({Signer? customSigner}) async => goldenDeviceBuilder(ConnectedWalletButton(
         signer: customSigner ?? signer,
         width: 300,
+        height: 60,
       ));
 
   zGoldenTest("When initializing, it should get the signer address", goldenFileName: "connected_wallet_button",

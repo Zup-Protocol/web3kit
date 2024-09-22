@@ -21,23 +21,127 @@ class $AssetsIconsGen {
   /// File path: assets/icons/cable.connector.slash.svg
   SvgGenImage get cableConnectorSlash => const SvgGenImage('assets/icons/cable.connector.slash.svg');
 
+  /// File path: assets/icons/info.circle.svg
+  SvgGenImage get infoCircle => const SvgGenImage('assets/icons/info.circle.svg');
+
+  /// File path: assets/icons/magnifyingglass.svg
+  SvgGenImage get magnifyingglass => const SvgGenImage('assets/icons/magnifyingglass.svg');
+
+  /// File path: assets/icons/rectangle.2.swap.svg
+  SvgGenImage get rectangle2Swap => const SvgGenImage('assets/icons/rectangle.2.swap.svg');
+
   /// File path: assets/icons/square.on.square.svg
   SvgGenImage get squareOnSquare => const SvgGenImage('assets/icons/square.on.square.svg');
 
   /// File path: assets/icons/wallet.bifold.svg
   SvgGenImage get walletBifold => const SvgGenImage('assets/icons/wallet.bifold.svg');
 
+  /// File path: assets/icons/wallet.search.svg
+  SvgGenImage get walletSearch => const SvgGenImage('assets/icons/wallet.search.svg');
+
   /// File path: assets/icons/wallet_connect.svg
   SvgGenImage get walletConnect => const SvgGenImage('assets/icons/wallet_connect.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [cableConnectorHorizontal, cableConnectorSlash, squareOnSquare, walletBifold, walletConnect];
+  List<SvgGenImage> get values => [cableConnectorHorizontal, cableConnectorSlash, infoCircle, magnifyingglass, rectangle2Swap, squareOnSquare, walletBifold, walletSearch, walletConnect];
+}
+
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/wallets.png
+  AssetGenImage get wallets => const AssetGenImage('assets/images/wallets.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [wallets];
 }
 
 class Assets {
   Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
+  static const $AssetsImagesGen images = $AssetsImagesGen();
+}
+
+class AssetGenImage {
+  const AssetGenImage(
+    this._assetName, {
+    this.size,
+    this.flavors = const {},
+  });
+
+  final String _assetName;
+
+  final Size? size;
+  final Set<String> flavors;
+
+  Image image({
+    Key? key,
+    AssetBundle? bundle,
+    ImageFrameBuilder? frameBuilder,
+    ImageErrorWidgetBuilder? errorBuilder,
+    String? semanticLabel,
+    bool excludeFromSemantics = false,
+    double? scale,
+    double? width,
+    double? height,
+    Color? color,
+    Animation<double>? opacity,
+    BlendMode? colorBlendMode,
+    BoxFit? fit,
+    AlignmentGeometry alignment = Alignment.center,
+    ImageRepeat repeat = ImageRepeat.noRepeat,
+    Rect? centerSlice,
+    bool matchTextDirection = false,
+    bool gaplessPlayback = false,
+    bool isAntiAlias = false,
+    String? package,
+    FilterQuality filterQuality = FilterQuality.low,
+    int? cacheWidth,
+    int? cacheHeight,
+  }) {
+    return Image.asset(
+      _assetName,
+      key: key,
+      bundle: bundle,
+      frameBuilder: frameBuilder,
+      errorBuilder: errorBuilder,
+      semanticLabel: semanticLabel,
+      excludeFromSemantics: excludeFromSemantics,
+      scale: scale,
+      width: width,
+      height: height,
+      color: color,
+      opacity: opacity,
+      colorBlendMode: colorBlendMode,
+      fit: fit,
+      alignment: alignment,
+      repeat: repeat,
+      centerSlice: centerSlice,
+      matchTextDirection: matchTextDirection,
+      gaplessPlayback: gaplessPlayback,
+      isAntiAlias: isAntiAlias,
+      package: package,
+      filterQuality: filterQuality,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+    );
+  }
+
+  ImageProvider provider({
+    AssetBundle? bundle,
+    String? package,
+  }) {
+    return AssetImage(
+      _assetName,
+      bundle: bundle,
+      package: package,
+    );
+  }
+
+  String get path => _assetName;
+
+  String get keyName => _assetName;
 }
 
 class SvgGenImage {

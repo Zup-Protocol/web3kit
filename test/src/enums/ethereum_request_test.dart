@@ -2,7 +2,15 @@ import "package:test/test.dart";
 import "package:web3kit/src/enums/ethereum_request.dart";
 
 void main() {
-  test(".method extension should return the correct method string", () {
+  test("`.method` extension should return the correct method string for `revokePermissions`", () {
     expect(EthereumRequest.revokePermissions.method, "wallet_revokePermissions");
+  });
+
+  test("`.method` extension should return the correct method string for `switchEthereumChain`", () {
+    expect(EthereumRequest.switchEthereumChain.method, "wallet_switchEthereumChain");
+  });
+
+  test("`.method` extension should return the correct method string for `addEthereumChain`", () {
+    expect(EthereumRequest.addEthereumChain.method, "wallet_addEthereumChain");
   });
 }
