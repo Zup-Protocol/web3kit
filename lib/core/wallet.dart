@@ -2,13 +2,17 @@ import "dart:async";
 
 import "package:collection/collection.dart";
 import "package:web3kit/core/core.dart";
+import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
+import "package:web3kit/src/enums/ethereum_request_error.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
-import "package:web3kit/src/ethers/ethers_exceptions.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
+import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethereum_request_error.js.dart";
 import "package:web3kit/src/mocks/ethers_errors.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethers/ethers_error.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
@@ -58,14 +62,9 @@ class Wallet {
   void _setupStreams() async {
     for (var wallet in _installedWallets) {
       wallet.provider.onAccountsChanged((accounts) async {
-        if (accounts.isEmpty) {
-          _connectedProvider = null;
-          return _updateSigner(null);
-        }
+        if (accounts.isEmpty) return await disconnect();
 
-        _connectedProvider = wallet.provider;
-        Signer signer = await _browserProvider.getSigner(wallet.provider);
-        _updateSigner(signer);
+        await connect(wallet);
       });
     }
   }
@@ -93,6 +92,32 @@ class Wallet {
     _window.dispatchEvent(JSEIP6963Event(EIP6963EventEnum.requestProvider.name.toJS));
     _window.removeEventListener(EIP6963EventEnum.announceProvider.name, eventCallback);
   }
+
+  /// Switch the current wallet's chain to the given chain Id.
+  /// !Warning: This method only works if a wallet is currently connected to the application
+  ///
+  /// @param `hexChainId` the chainId to switch in Hex String. E.g, Ethereum mainnet has an ChainId 1, then it will be "0x1"
+  ///
+  /// @throws [UnrecognizedChainId] if the chainId is not recognized by the wallet (It's either not supported or not added yet).
+  /// In case of the error [UnrecognizedChainId], you can use the method [addNetwork] instead, to add the chain to the wallet (if supported).
+  Future<void> switchNetwork(String hexChainId) async {
+    assert(_connectedProvider != null, "Wallet should be connected to switch network");
+
+    try {
+      await _connectedProvider!.switchChain(hexChainId);
+    } catch (e) {
+      bool isEthereumRequestError = (e is JSEthereumRequestError);
+
+      bool isUnrecognizedChainIdError =
+          isEthereumRequestError && (e).code.toDartInt == EthereumRequestError.unrecognizedChainId.code;
+
+      if (isUnrecognizedChainIdError) throw UnrecognizedChainId(hexChainId);
+
+      rethrow;
+    }
+  }
+
+  Future<void> addNetwork() async {}
 
   /// Connect to a wallet that was connected, and wasn't disconnected in the same session.
   /// If there are no previous cached connections, it will return `null` as the Signer.
@@ -142,5 +167,7 @@ class Wallet {
       // as it will revert if the current connected wallet did not implement MIP-2 standard
       // we can safely ignore the error
     }
+
+    _connectedProvider = null;
   }
 }

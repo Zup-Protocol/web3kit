@@ -1,15 +1,17 @@
+import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
-import "package:test/test.dart";
 import "package:web3kit/core/core.dart";
+import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_event.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
-import "package:web3kit/src/ethers/ethers_exceptions.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_detail.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_detail_info.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart";
+import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart";
 import "package:web3kit/src/mocks/ethers_errors.js_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" hide Cache;
@@ -50,6 +52,9 @@ void main() {
     registerFallbackValue(EthereumProviderMock());
 
     mockInjections(customBrowserProvider: browserProvider, customWallet: sut);
+
+    when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async => () {});
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => SignerMock());
   });
 
   tearDown(() => resetInjections());
@@ -105,7 +110,7 @@ void main() {
       expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (_) => null)));
 
       for (var i = 0; i < walletsAmount; i++) {
-        providers[i].callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
+        await providers[i].callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
       }
 
       expect(wallet.connectedProvider, null);
@@ -132,7 +137,7 @@ void main() {
 
       expectLater(wallet.signerStream, emits(null));
 
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
+      await provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
 
       expect(wallet.connectedProvider, null);
     });
@@ -159,11 +164,14 @@ void main() {
       ));
 
       final wallet = Wallet(browserProvider, cache, window0);
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[currentConnectedSigner.toJS].jsify());
+      await provider.callRegisteredEvent(
+          EthereumEvent.accountsChanged.name, <JSString>[currentConnectedSigner.toJS].jsify());
 
       expectLater(wallet.signerStream, emits(null));
 
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
+      await provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, const JSArray<JSString>([]));
+
+      await Future.delayed(Duration.zero); // we need this to wait until the connected provider is set to null
 
       expect(wallet.connectedProvider, null);
     });
@@ -194,7 +202,7 @@ void main() {
 
       expectLater(wallet.signerStream, emits(signer));
 
-      provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress.toJS].jsify());
+      await provider.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress.toJS].jsify());
 
       expect(wallet.connectedProvider?.jsEthereumProvider, provider);
     });
@@ -238,10 +246,10 @@ void main() {
       expectLater(wallet.signerStream, emitsInOrder([signer1, signer2]));
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer1);
-      provider1.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress1.toJS].jsify());
+      await provider1.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress1.toJS].jsify());
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer2);
-      provider2.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress2.toJS].jsify());
+      await provider2.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress2.toJS].jsify());
 
       expect(wallet.connectedProvider?.jsEthereumProvider, provider2);
     });
@@ -582,5 +590,70 @@ void main() {
     Inject.getInjections();
 
     expect(Wallet.shared.hashCode, sut.hashCode);
+  });
+
+  test("when calling `switchNetwork` and the current connected provider is null, it should throw", () async {
+    expect(() async => await sut.switchNetwork("0x1"), throwsAssertionError);
+  });
+
+  test("When calling `switchNetwork` it should call the provider's `switchChain` method", () async {
+    const chainId = "0x1";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => ethereumProvider.switchChain(any())).thenAnswer((_) async => () {});
+
+    await sut.connect(walletDetail);
+
+    await sut.switchNetwork(chainId);
+
+    verify(() => ethereumProvider.switchChain(chainId)).called(1);
+  });
+
+  test(
+      "When calling `switchNetwork` and the provider throw an error that the chain is not supported, it should throw an custom error",
+      () async {
+    const chainId = "0x1";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => ethereumProvider.switchChain(any())).thenThrow(JSEthereumRequestError(4902.toJS));
+
+    await sut.connect(walletDetail);
+
+    expect(() async => await sut.switchNetwork(chainId), throwsA(isA<UnrecognizedChainId>()));
+  });
+
+  test(
+      "When calling `switchNetwork` and the provider throw any error other than the chain is not supported, it should rethrow the error",
+      () async {
+    const chainId = "0x1";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => ethereumProvider.switchChain(any())).thenThrow(JSEthereumRequestError(123.toJS));
+
+    await sut.connect(walletDetail);
+
+    expect(() async => await sut.switchNetwork(chainId), throwsA(isA<JSEthereumRequestError>()));
+  });
+
+  test(
+      "When calling `switchNetwork` and a error that is not an [JSEthereumRequestError] occur, it should rethrow the error",
+      () async {
+    const chainId = "0x1";
+    const randomError = "ERROR_RANDOM";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => ethereumProvider.switchChain(any())).thenThrow(randomError);
+
+    await sut.connect(walletDetail);
+
+    expect(() async => await sut.switchNetwork(chainId), throwsA(randomError));
   });
 }

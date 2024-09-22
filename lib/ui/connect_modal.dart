@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:web3kit/gen/assets.gen.dart";
+import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/web3kit.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";

@@ -1,7 +1,7 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:web3kit/core/core.dart";
-import "package:web3kit/src/ethers/ethers_exceptions.dart";
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 
 part "wallet_button_cubit.freezed.dart";
 part "wallet_button_state.dart";

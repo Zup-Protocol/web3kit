@@ -1,11 +1,10 @@
 import "package:equatable/equatable.dart";
 import "package:web3kit/src/enums/ethereum_event.dart";
 import "package:web3kit/src/enums/ethereum_request.dart";
+import "package:web3kit/src/extensions/js_object_extension.dart";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_provider.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
-import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart"
-    if (dart.library.html) "dart:js_interop_unsafe";
 
 /// Dart abstraction of the ethereum provider in the browser.
 class EthereumProvider extends Equatable {
@@ -33,20 +32,29 @@ class EthereumProvider extends Equatable {
         }).toJS);
   }
 
+  Future<void> switchChain(String hexChainId) async {
+    final requestObject = JSObject().getEthereumRequestObject(
+      EthereumRequest.switchEthereumChain.method,
+      [
+        {
+          "chainId": hexChainId.toJS,
+        }
+      ],
+    );
+
+    await jsEthereumProvider.request(requestObject).toDart;
+  }
+
   /// Revoke access to the current wallet, using the metamask's revokePermissions MIP-2 standard.
   /// For more info about the MIP-2, please head over to https://github.com/MetaMask/metamask-improvement-proposals/blob/main/MIPs/mip-2.md
   ///
   /// If the current wallet does not support this standard, it will throw an error. Then you should implement your custom disconnection logic
   Future<void> revokePermissions() async {
-    final requestObject = JSObject()
-      ..setProperty("method".toJS, EthereumRequest.revokePermissions.method.toJS)
-      ..setProperty(
-          "params".toJS,
-          [
-            {
-              "eth_accounts": {},
-            }
-          ].jsify());
+    final requestObject = JSObject().getEthereumRequestObject(EthereumRequest.revokePermissions.method, [
+      {
+        "eth_accounts": JSObject(), // empty object
+      }
+    ]);
 
     await jsEthereumProvider.request(requestObject).toDart;
   }

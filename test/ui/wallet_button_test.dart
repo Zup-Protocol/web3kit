@@ -6,7 +6,7 @@ import "package:flutter_test/flutter_test.dart";
 import "package:golden_toolkit/golden_toolkit.dart";
 import "package:mocktail/mocktail.dart";
 import "package:web3kit/core/core.dart";
-import "package:web3kit/src/ethers/ethers_exceptions.dart";
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 import "package:web3kit/ui/wallet_button.dart";
 
 import "../mocks.dart";

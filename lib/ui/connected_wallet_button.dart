@@ -9,13 +9,16 @@ import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Build a widget that shows the user's connected Wallet
 class ConnectedWalletButton extends StatefulWidget {
-  const ConnectedWalletButton({super.key, required this.signer, this.width});
+  const ConnectedWalletButton({super.key, required this.signer, this.width, this.height = 50});
 
   /// The current connected signer
   final Signer signer;
 
   /// The width of the button. If not passed it will use the minimum width to accommodate the button content
   final double? width;
+
+  /// The max height of the button
+  final double height;
 
   @override
   State<ConnectedWalletButton> createState() => _ConnectedWalletButtonState();
@@ -52,6 +55,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
 
           return SizedBox(
             width: widget.width,
+            height: widget.height,
             child: MaterialButton(
               key: const Key("connected-wallet-button"),
               shape: RoundedRectangleBorder(

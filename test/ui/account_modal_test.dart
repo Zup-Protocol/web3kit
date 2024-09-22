@@ -78,8 +78,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  zGoldenTest("When clicking disconnect, it should disconnect the user wallet and close the modal",
-      goldenFileName: "account_modal_disconnect_tap", (tester) async {
+  zGoldenTest("When clicking disconnect, it should disconnect the user wallet", (tester) async {
     await tester.pumpDeviceBuilder(await goldenBuilder(), wrapper: GoldenConfig.localizationsWrapper());
     await tester.pumpAndSettle();
 
@@ -87,6 +86,20 @@ void main() {
     await tester.pumpAndSettle();
 
     verify(() => wallet.disconnect()).called(1);
+  });
+
+  zGoldenTest("When an event of disconnect is emitted (emit a null signer), it should disconnect the user wallet",
+      goldenFileName: "account_modal_disconnect", (tester) async {
+    final signerStreamController = StreamController<Signer?>.broadcast();
+    final signerStream = signerStreamController.stream;
+
+    when(() => wallet.signerStream).thenAnswer((_) => signerStream);
+
+    await tester.pumpDeviceBuilder(await goldenBuilder(), wrapper: GoldenConfig.localizationsWrapper());
+    await tester.pumpAndSettle();
+
+    signerStreamController.add(null);
+    await tester.pumpAndSettle();
   });
 
   zGoldenTest("If an event of signer changed is emitted, it should update the account",

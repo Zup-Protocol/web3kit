@@ -42,7 +42,7 @@ dev_dependencies:
   mocktail_image_network: ^1.2.0
 
 flutter_gen:
-  output: lib/gen/
+  output: lib/src/gen/
   line_length: 200
   integrations:
     flutter_svg: true
@@ -57,3 +57,4 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/logos/
