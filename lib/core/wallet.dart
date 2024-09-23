@@ -117,6 +117,9 @@ class Wallet {
     }
   }
 
+  /// Add a new network to the connected wallet
+  ///
+  /// @param `network` the information about the network to be added.
   Future<void> addNetwork(ChainInfo network) async {
     assert(_connectedProvider != null, "Wallet should be connected to add network");
 
