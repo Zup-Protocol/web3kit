@@ -11,7 +11,8 @@ class JS {
 class JSObject extends Equatable implements JSAny {
   bool isA<T extends JSObject?>() => true;
 
-  @visibleForTesting
+  /// Warning: THIS FUNCTION DOES NOT EXIST IN THE REAL IMPLEMENTATION. ONLY IN THE MOCK
+  @internal
   final Map<JSAny, JSAny?> properties = {};
 
   @override
@@ -47,7 +48,8 @@ class JSString<T> extends Equatable implements JSAny {
 class JSFunction {
   JSFunction(this.dartFunction);
 
-  @visibleForTesting
+  /// Warning: THIS FUNCTION DOES NOT EXIST IN THE REAL IMPLEMENTATION. ONLY IN THE MOCK
+  @internal
   final Function dartFunction;
 }
 
