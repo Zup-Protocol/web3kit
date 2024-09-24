@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:golden_toolkit/golden_toolkit.dart";
 import "package:mocktail/mocktail.dart";
-import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
 import "package:web3kit/web3kit.dart";
 
 import "../mocks.dart";
@@ -12,6 +11,7 @@ void main() {
   late Wallet wallet;
 
   setUp(() {
+    registerFallbackValue(const ChainInfo(hexChainId: "any"));
     wallet = WalletMock();
     mockInjections(customWallet: wallet);
 
@@ -25,14 +25,14 @@ void main() {
     double buttonHeight = 60,
     int initialNetworkIndex = 0,
     bool addNetworksToWallet = true,
-    Function(NetworkSwitcherItem item)? onSelect,
+    Function(NetworkSwitcherItem item, int index)? onSelect,
   }) async =>
       await goldenDeviceBuilder(
         NetworkSwitcher(
           buttonHeight: buttonHeight,
           initialNetworkIndex: initialNetworkIndex,
           addNetworksToWallet: addNetworksToWallet,
-          onSelect: onSelect ?? (item) {},
+          onSelect: onSelect ?? (item, index) {},
           networks: networks ??
               [
                 NetworkSwitcherItem(
@@ -151,19 +151,23 @@ void main() {
     ]));
   });
 
-  zGoldenTest("The onSelected callback should be called with the selected network once a network is selected",
+  zGoldenTest(
+      "The onSelected callback should be called with the selected network and her index once a network is selected",
       (tester) async {
     final expectedSelectedNetwork = NetworkSwitcherItem(
       title: "Network 3",
       chainInfo: const ChainInfo(hexChainId: "0x2"),
       icon: const Icon(Icons.airline_seat_recline_extra),
     );
+    const expectedSelectedNetworkIndex = 2;
 
     NetworkSwitcherItem? actualSelectedNetwork;
+    int? actualSelectedNetworkIndex;
 
     await tester.pumpDeviceBuilder(await goldenBuilder(
-        onSelect: (item) {
+        onSelect: (item, index) {
           actualSelectedNetwork = item;
+          actualSelectedNetworkIndex = index;
         },
         initialNetworkIndex: 0,
         networks: [
@@ -192,6 +196,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(actualSelectedNetwork, expectedSelectedNetwork);
+    expect(actualSelectedNetworkIndex, expectedSelectedNetworkIndex);
   });
 
   zGoldenTest("When the current signer is null, it should not ask to switch network on wallet", (tester) async {
@@ -213,7 +218,7 @@ void main() {
     await tester.tap(find.text("Network 2"));
     await tester.pumpAndSettle();
 
-    verifyNever(() => wallet.switchNetwork(any()));
+    verifyNever(() => wallet.switchOrAddNetwork(any()));
   });
 
   zGoldenTest("When the current signer is not null, it should ask to switch network on wallet", (tester) async {
@@ -236,103 +241,62 @@ void main() {
     await tester.tap(find.text("Network 2"));
     await tester.pumpAndSettle();
 
+    verify(() => wallet.switchOrAddNetwork(expectedSelectedNetwork.chainInfo!)).called(1);
+  });
+
+  zGoldenTest("When the param `addNetworksToWallet` is true, it should use the `switchOrAddNetwork` method from wallet",
+      (tester) async {
+    when(() => wallet.signer).thenReturn(SignerMock());
+    var expectedSelectedNetwork = NetworkSwitcherItem(
+      title: "Network 2",
+      chainInfo: const ChainInfo(hexChainId: "0x2"),
+    );
+
+    await tester.pumpDeviceBuilder(await goldenBuilder(
+      addNetworksToWallet: true,
+      networks: [
+        NetworkSwitcherItem(
+          title: "Network 1",
+          chainInfo: const ChainInfo(hexChainId: "0x1"),
+        ),
+        expectedSelectedNetwork
+      ],
+    ));
+
+    await tester.tap(find.byKey(const Key("network-switcher")));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("Network 2"));
+    await tester.pumpAndSettle();
+
+    verify(() => wallet.switchOrAddNetwork(expectedSelectedNetwork.chainInfo!)).called(1);
+  });
+
+  zGoldenTest(
+      "When the param `addNetworksToWallet` is false, it should not use the `switchOrAddNetwork` method from wallet. It should instead use `switchNetwork` method from wallet",
+      (tester) async {
+    when(() => wallet.signer).thenReturn(SignerMock());
+    var expectedSelectedNetwork = NetworkSwitcherItem(
+      title: "Network 2",
+      chainInfo: const ChainInfo(hexChainId: "0x2"),
+    );
+
+    await tester.pumpDeviceBuilder(await goldenBuilder(
+      addNetworksToWallet: false,
+      networks: [
+        NetworkSwitcherItem(
+          title: "Network 1",
+          chainInfo: const ChainInfo(hexChainId: "0x1"),
+        ),
+        expectedSelectedNetwork
+      ],
+    ));
+
+    await tester.tap(find.byKey(const Key("network-switcher")));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("Network 2"));
+    await tester.pumpAndSettle();
+
+    verifyNever(() => wallet.switchOrAddNetwork(any()));
     verify(() => wallet.switchNetwork(expectedSelectedNetwork.chainInfo!.hexChainId)).called(1);
-  });
-
-  zGoldenTest("""When an error occurs while switching the network,
-      and the error is that the chain is not added yet, and the param
-      `addNetworksToWallet` is true, it should ask to add the chain""", (tester) async {
-    when(() => wallet.signer).thenReturn(SignerMock());
-
-    when(() => wallet.switchNetwork(any())).thenThrow(UnrecognizedChainId("0x2"));
-
-    var expectedSelectedNetwork = NetworkSwitcherItem(
-      title: "Network 2",
-      chainInfo: const ChainInfo(
-        hexChainId: "0x2",
-        chainName: "Any Chain",
-        rpcUrls: ["http://localhost:8545"],
-      ),
-    );
-
-    await tester.pumpDeviceBuilder(await goldenBuilder(addNetworksToWallet: true, networks: [
-      NetworkSwitcherItem(
-        title: "Network 1",
-        chainInfo: const ChainInfo(hexChainId: "0x1"),
-      ),
-      expectedSelectedNetwork
-    ]));
-
-    await tester.tap(find.byKey(const Key("network-switcher")));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text("Network 2"));
-    await tester.pumpAndSettle();
-
-    verify(() => wallet.addNetwork(expectedSelectedNetwork.chainInfo!)).called(1);
-  });
-
-  zGoldenTest("""When an error occurs while switching the network,
-      and the error is that the chain is not added yet, but the param
-      `addNetworksToWallet` is false, it should show an error snack bar and not ask to add the chain""",
-      goldenFileName: "network_switcher_error", (tester) async {
-    when(() => wallet.signer).thenReturn(SignerMock());
-
-    when(() => wallet.switchNetwork(any())).thenThrow(UnrecognizedChainId("0x2"));
-
-    var expectedSelectedNetwork = NetworkSwitcherItem(
-      title: "Network 2",
-      chainInfo: const ChainInfo(
-        hexChainId: "0x2",
-        chainName: "Any Chain",
-        rpcUrls: ["http://localhost:8545"],
-      ),
-    );
-
-    await tester.pumpDeviceBuilder(await goldenBuilder(addNetworksToWallet: false, networks: [
-      NetworkSwitcherItem(
-        title: "Network 1",
-        chainInfo: const ChainInfo(hexChainId: "0x1"),
-      ),
-      expectedSelectedNetwork
-    ]));
-
-    await tester.tap(find.byKey(const Key("network-switcher")));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text("Network 2"));
-    await tester.pumpAndSettle();
-
-    verifyNever(() => wallet.addNetwork(expectedSelectedNetwork.chainInfo!));
-  });
-
-  zGoldenTest("""When an error occurs while switching the network,
-      and the error is not that the chain is not added yet, it should show an error snack bar
-      and not ask to add the chain""", goldenFileName: "network_switcher_random_error", (tester) async {
-    when(() => wallet.signer).thenReturn(SignerMock());
-
-    when(() => wallet.switchNetwork(any())).thenThrow("ANY ERROR");
-
-    var expectedSelectedNetwork = NetworkSwitcherItem(
-      title: "Network 2",
-      chainInfo: const ChainInfo(
-        hexChainId: "0x2",
-        chainName: "Any Chain",
-        rpcUrls: ["http://localhost:8545"],
-      ),
-    );
-
-    await tester.pumpDeviceBuilder(await goldenBuilder(addNetworksToWallet: false, networks: [
-      NetworkSwitcherItem(
-        title: "Network 1",
-        chainInfo: const ChainInfo(hexChainId: "0x1"),
-      ),
-      expectedSelectedNetwork
-    ]));
-
-    await tester.tap(find.byKey(const Key("network-switcher")));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text("Network 2"));
-    await tester.pumpAndSettle();
-
-    verifyNever(() => wallet.addNetwork(expectedSelectedNetwork.chainInfo!));
   });
 }

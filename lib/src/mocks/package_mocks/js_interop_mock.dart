@@ -11,6 +11,7 @@ class JS {
 class JSObject extends Equatable implements JSAny {
   bool isA<T extends JSObject?>() => true;
 
+  @visibleForTesting
   final Map<JSAny, JSAny?> properties = {};
 
   @override
@@ -27,12 +28,15 @@ class JSAny {}
 class JSPromise<T> {
   JSPromise(this.value);
 
+  @visibleForTesting
   T value;
 }
 
 @internal
 class JSString<T> extends Equatable implements JSAny {
+  @visibleForTesting
   final String name;
+
   const JSString(this.name);
 
   @override
@@ -42,6 +46,8 @@ class JSString<T> extends Equatable implements JSAny {
 @internal
 class JSFunction {
   JSFunction(this.dartFunction);
+
+  @visibleForTesting
   final Function dartFunction;
 }
 
@@ -49,6 +55,7 @@ class JSFunction {
 class JSArray<T> extends Equatable implements JSAny {
   const JSArray(this.list);
 
+  @visibleForTesting
   final List<T> list;
 
   @override
@@ -57,11 +64,29 @@ class JSArray<T> extends Equatable implements JSAny {
 
 @internal
 class JSNumber extends Equatable implements JSAny {
-  final num value;
   const JSNumber(this.value);
+
+  @visibleForTesting
+  final num value;
 
   @override
   List<Object?> get props => [value];
+}
+
+@internal
+class JSBigInt implements JSAny {
+  JSBigInt(this.value);
+
+  int value;
+
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
+extension JSBigIntToObject on JSBigInt {
+  Object? dartify() => null;
 }
 
 @internal

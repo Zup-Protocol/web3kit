@@ -59,6 +59,17 @@ class Wallet {
   /// Returns null if no wallet is connected
   EthereumProvider? get connectedProvider => _connectedProvider;
 
+  /// Get the current network of the connected wallet
+  ///
+  /// !Warning: This getter only works if a wallet is currently connected to the application.
+  ///
+  /// If you desire to get the network of a wallet that is not currently connected, use the [BrowserProvider]
+  Future<ChainInfo> get connectedNetwork async {
+    assert(_connectedProvider != null, "Wallet should be connected to get network");
+
+    return await _browserProvider.getNetwork(_connectedProvider!);
+  }
+
   void _setupStreams() async {
     for (var wallet in _installedWallets) {
       wallet.provider.onAccountsChanged((accounts) async {
@@ -69,9 +80,15 @@ class Wallet {
     }
   }
 
-  void _updateSigner(Signer? signer) {
-    _signer = signer;
-    _signerStreamController.add(signer);
+  void _updateSigner(Signer? newSigner) async {
+    final List<String?> newAndOldSigner = await Future.wait<String?>(
+      [signer?.address ?? Future.value(null), newSigner?.address ?? Future.value(null)],
+    );
+
+    if (newAndOldSigner.first == newAndOldSigner.last) return;
+
+    _signer = newSigner;
+    _signerStreamController.add(newSigner);
   }
 
   void _getInstalledWallets() {
@@ -118,12 +135,27 @@ class Wallet {
   }
 
   /// Add a new network to the connected wallet
+  /// !Warning: This method only works if a wallet is currently connected to the application
   ///
   /// @param `network` the information about the network to be added.
   Future<void> addNetwork(ChainInfo network) async {
     assert(_connectedProvider != null, "Wallet should be connected to add network");
 
     await _connectedProvider!.addChain(network);
+  }
+
+  /// Try to switch the current wallet chain to the given chain. But if the chain is not added yet in the wallet,
+  /// it will ask to add a new chain
+  ///
+  /// This method in general is a combination of the methods [switchNetwork] and [addNetwork]. That you can also use
+  Future<void> switchOrAddNetwork(ChainInfo network) async {
+    try {
+      await switchNetwork(network.hexChainId);
+    } catch (e) {
+      if (e is UnrecognizedChainId) return Wallet.shared.addNetwork(network);
+
+      rethrow;
+    }
   }
 
   /// Connect to a wallet that was connected, and wasn't disconnected in the same session.
@@ -146,11 +178,13 @@ class Wallet {
   /// `wallet` is the intended wallet to connect. You can get this in the `installedWallets` property of this class
   Future<Signer> connect(WalletDetail wallet) async {
     try {
-      final signer = await _browserProvider.getSigner(wallet.provider);
+      final newSigner = await _browserProvider.getSigner(wallet.provider);
       _connectedProvider = wallet.provider;
-      _updateSigner(signer);
+
+      _updateSigner(newSigner);
+
       _cache.setWalletConnectionState(wallet.info.rdns);
-      return signer;
+      return newSigner;
     } catch (e) {
       bool isEthersError = (e is JSObject && (e).isA<JSEthersError>());
 
