@@ -44,6 +44,7 @@ void main() {
     browserProvider = BrowserProviderMock();
     cache = CacheMock();
     window = _CustomWindowMock();
+    final signer = SignerMock();
 
     sut = Wallet(browserProvider, cache, window);
 
@@ -55,7 +56,8 @@ void main() {
     mockInjections(customBrowserProvider: browserProvider, customWallet: sut);
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async => () {});
-    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => SignerMock());
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => signer.address).thenAnswer((_) async => "0x99E3CfADCD8Feecb5DdF91f88998cFfB3145F78c");
   });
 
   tearDown(() => resetInjections());
@@ -91,7 +93,6 @@ void main() {
       final List<CustomJSEthereumProviderMock> providers =
           List.generate(walletsAmount, (_) => CustomJSEthereumProviderMock());
       final window0 = Window();
-      const signerAddress = "0x123";
 
       for (var i = 0; i < walletsAmount; i++) {
         window0.setAddEventListenerCallbackParam(JSEIP6963Event(
@@ -109,19 +110,24 @@ void main() {
 
       final wallet = Wallet(browserProvider, cache, window0);
 
-      expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (_) => anything)));
+      expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (index) => anything)));
 
       for (var i = 0; i < walletsAmount; i++) {
-        await providers[i]
-            .callRegisteredEvent(EthereumEvent.accountsChanged.name, JSArray<JSString>([signerAddress.toJS]));
+        final signer = SignerMock();
+        when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+        when(() => signer.address).thenAnswer((_) async => i.toString());
+
+        await providers[i].callRegisteredEvent(
+          EthereumEvent.accountsChanged.name,
+          JSArray<JSString>([i.toString().toJS]),
+        );
       }
     });
 
     test("""If the accountsChanged array callback is empty,
     and has a current connected signer, it should emit a
     null event and set the connected provider to null""", () async {
-      when(() => browserProvider.getSigner(any())).thenAnswer((_) async => SignerMock());
-      const currentConnectedSigner = "0x36591DeBffCf727D5EEA2Cd6A745ee905Fae91C8";
+      const currentConnectedSignerAddress = "0x36591DeBffCf727D5EEA2Cd6A745ee905Fae91C8";
 
       final provider = CustomJSEthereumProviderMock();
       final window0 = Window();
@@ -140,7 +146,9 @@ void main() {
 
       final wallet = Wallet(browserProvider, cache, window0);
       await provider.callRegisteredEvent(
-          EthereumEvent.accountsChanged.name, <JSString>[currentConnectedSigner.toJS].jsify());
+          EthereumEvent.accountsChanged.name, <JSString>[currentConnectedSignerAddress.toJS].jsify());
+
+      await Future.delayed(Duration.zero); // we need this to wait until the connected provider is set to null
 
       expectLater(wallet.signerStream, emits(null));
 
@@ -160,6 +168,7 @@ void main() {
       const signerAddress = "0x36591DeBffCf727D5EEA2Cd6A745ee905Fae91C8";
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+      when(() => signer.address).thenAnswer((_) async => signerAddress);
 
       window0.setAddEventListenerCallbackParam(JSEIP6963Event(
         JSString(EIP6963EventEnum.requestProvider.name),
@@ -221,9 +230,11 @@ void main() {
       expectLater(wallet.signerStream, emitsInOrder([signer1, signer2]));
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer1);
+      when(() => signer1.address).thenAnswer((_) async => signerAddress1);
       await provider1.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress1.toJS].jsify());
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer2);
+      when(() => signer2.address).thenAnswer((_) async => signerAddress2);
       await provider2.callRegisteredEvent(EthereumEvent.accountsChanged.name, <JSString>[signerAddress2.toJS].jsify());
 
       expect(wallet.connectedProvider?.jsEthereumProvider, provider2);
@@ -285,12 +296,13 @@ void main() {
       () async {
     const walletRDNS = "com.rdns";
     final provider = JSEthereumProviderMock();
+    final jsEthersSigner = JSEthersSignerMock();
+    final signer = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
 
     when(() => cache.getConnectedWallet()).thenAnswer((_) async => walletRDNS);
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
-    when(() => browserProvider.getSigner(any())).thenAnswer(
-      (_) async => Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock()),
-    );
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     window.dispatchEvent(JSEIP6963Event(
       JSString(EIP6963EventEnum.requestProvider.name),
@@ -313,13 +325,15 @@ void main() {
   test(
       "When calling `connect` it should call `getSigner` from browser provider with the wallet provider, to prompt the connect wallet dialog",
       () async {
-    when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
-    when(() => browserProvider.getSigner(any()))
-        .thenAnswer((_) async => Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock()));
-
+    final jsEthersSigner = JSEthersSignerMock();
+    final signer = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
     final ethereumProvider = EthereumProviderMock();
     final walletToConnect =
         WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     await sut.connect(walletToConnect);
 
@@ -327,9 +341,12 @@ void main() {
   });
 
   test("When calling `connect` it should set the connected provider with the wallet provider", () async {
+    final jsEthersSigner = JSEthersSignerMock();
+    final signer = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
+
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
-    when(() => browserProvider.getSigner(any()))
-        .thenAnswer((_) async => Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock()));
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     final ethereumProvider = EthereumProviderMock();
     final walletToConnect =
@@ -364,10 +381,12 @@ void main() {
     final ethereumProvider = EthereumProviderMock();
     final walletToConnect =
         WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
-    final signer = Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock());
+    final jsEthersSigner = JSEthersSignerMock();
+    final signer = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
     when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     expectLater(sut.signerStream, emits(signer));
 
@@ -404,10 +423,12 @@ void main() {
     const walletRDNS = "rdns.wallet";
     final walletToConnect =
         WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: walletRDNS), provider: ethereumProvider);
-    final signer = Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock());
+    final jsEthersSigner = JSEthersSignerMock();
+    final signer = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
     when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     await sut.connect(walletToConnect);
 
@@ -439,10 +460,12 @@ void main() {
     final ethereumProvider = EthereumProviderMock();
     final walletToConnect =
         WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
-    final expectedSigner = Signer(JSEthersSignerMock(), JSEthersBrowserProviderMock());
+    final jsEthersSigner = JSEthersSignerMock();
+    final expectedSigner = Signer(jsEthersSigner, JSEthersBrowserProviderMock());
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
     when(() => browserProvider.getSigner(any())).thenAnswer((_) async => expectedSigner);
+    when(() => jsEthersSigner.getAddress()).thenReturn(JSPromise<JSString>(const JSString("0x123")));
 
     final signerReturned = await sut.connect(walletToConnect);
 
@@ -486,6 +509,8 @@ void main() {
 
     await sut.connect(walletDetails);
 
+    await Future.delayed(const Duration(seconds: 0)); // needed to not cause concurrency issues
+
     expectLater(sut.signerStream, emits(null));
 
     await sut.disconnect();
@@ -504,7 +529,6 @@ void main() {
     final wallet = WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: provider);
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
-    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => SignerMock());
     when(() => provider.revokePermissions()).thenAnswer((_) async {});
 
     await sut.connect(wallet); // setting the provider
@@ -519,7 +543,6 @@ void main() {
     final wallet = WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: provider);
 
     when(() => cache.setWalletConnectionState(any())).thenAnswer((_) async {});
-    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => SignerMock());
     when(() => provider.revokePermissions()).thenThrow("it should not rethrow");
 
     await sut.connect(wallet); // setting the provider
@@ -539,6 +562,8 @@ void main() {
 
     await sut.connect(wallet);
 
+    await Future.delayed(const Duration(seconds: 0)); // needed to not cause concurrency issues
+
     expect(await sut.signer?.address, expectedSignerAddress);
   });
 
@@ -557,12 +582,16 @@ void main() {
 
     await sut.connect(oldWallet);
 
+    await Future.delayed(const Duration(seconds: 0)); // needed to not cause concurrency issues
+
     expect(await sut.signer?.address, oldSignerAddress); // making sure the signer is the old before the new
 
     when(() => browserProvider.getSigner(any())).thenAnswer((_) async => newSigner);
     when(() => newSigner.address).thenAnswer((_) async => newSignerAddress);
 
     await sut.connect(newWallet);
+
+    await Future.delayed(const Duration(seconds: 0)); // needed to not cause concurrency issues
 
     expect(await sut.signer?.address, newSignerAddress);
   });
@@ -655,5 +684,42 @@ void main() {
     await sut.addNetwork(chainInfo);
 
     verify(() => ethereumProvider.addChain(chainInfo)).called(1);
+  });
+
+  test("""When calling `switchOrAddNetwork` it should call the provider's `switchChain` method.
+  if an error is thrown saying that the chain is not added yet in the wallet,
+  it should call the provider's `addChain` method""", () async {
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    when(() => ethereumProvider.switchChain(any())).thenThrow(JSEthereumRequestError(4902.toJS));
+    when(() => ethereumProvider.addChain(any())).thenAnswer((_) async => () {});
+
+    const ChainInfo network = ChainInfo(hexChainId: "0x1");
+
+    await sut.connect(walletDetail);
+
+    await sut.switchOrAddNetwork(network);
+
+    verify(() => ethereumProvider.addChain(network)).called(1);
+  });
+
+  test("When calling `connectedNetwork`, it should assert for a connected provider", () {
+    expect(() async => await sut.connectedNetwork, throwsAssertionError);
+  });
+
+  test("When calling `connectedNetwork`, it should ask for the browser provider to get the connected network",
+      () async {
+    const connectedNetwork = ChainInfo(hexChainId: "0x1");
+    when(() => browserProvider.getNetwork(any())).thenAnswer((_) async => connectedNetwork);
+
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail =
+        WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
+
+    await sut.connect(walletDetail);
+
+    expect(await sut.connectedNetwork, connectedNetwork);
   });
 }

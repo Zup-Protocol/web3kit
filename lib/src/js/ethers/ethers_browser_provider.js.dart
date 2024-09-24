@@ -1,6 +1,7 @@
 @JS()
 library ethers_browser_provider;
 
+import "package:web3kit/src/js/ethers/ethers_network.js.dart";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_provider.js.dart";
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart"
@@ -14,4 +15,6 @@ extension type JSEthersBrowserProvider._(JSObject _) implements JSObject {
   external JSPromise<JSEthersSigner> getSigner();
 
   external JSPromise<JSString?> lookupAddress(JSString address);
+
+  external JSPromise<JSEthersNetwork> getNetwork();
 }

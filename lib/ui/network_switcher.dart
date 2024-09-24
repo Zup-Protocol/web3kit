@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
 import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/web3kit.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
@@ -40,7 +39,7 @@ class NetworkSwitcher extends StatefulWidget {
   ///
   /// Note that this is called whenever the user selects the button, but it's not guaranteed that
   /// the user changed the network in his wallet.
-  final Function(NetworkSwitcherItem item)? onSelect;
+  final Function(NetworkSwitcherItem item, int index)? onSelect;
 
   /// The height of the button to open the networks menu. Defaults to 50
   final double buttonHeight;
@@ -62,23 +61,19 @@ class NetworkSwitcher extends StatefulWidget {
 class _NetworkSwitcherState extends State<NetworkSwitcher> {
   void switchWalletNetwork(ChainInfo networkInfo) async {
     try {
-      await Wallet.shared.switchNetwork(networkInfo.hexChainId);
-    } catch (e) {
-      try {
-        if (widget.addNetworksToWallet && e is UnrecognizedChainId) return Wallet.shared.addNetwork(networkInfo);
+      if (widget.addNetworksToWallet) return Wallet.shared.switchOrAddNetwork(networkInfo);
 
-        rethrow;
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            ZupSnackBar(
-              context,
-              customIcon: Assets.icons.rectangle2Swap.svg(package: "web3kit"),
-              message: Web3KitLocalizations.of(context).networkSwitcherErrorDescription,
-              maxWidth: 630,
-            ),
-          );
-        }
+      Wallet.shared.switchNetwork(networkInfo.hexChainId);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          ZupSnackBar(
+            context,
+            customIcon: Assets.icons.rectangle2Swap.svg(package: "web3kit"),
+            message: Web3KitLocalizations.of(context).networkSwitcherErrorDescription,
+            maxWidth: 630,
+          ),
+        );
       }
     }
   }
@@ -96,7 +91,7 @@ class _NetworkSwitcherState extends State<NetworkSwitcher> {
           switchWalletNetwork(selectedNetwork.chainInfo!);
         }
 
-        widget.onSelect?.call(selectedNetwork);
+        widget.onSelect?.call(selectedNetwork, selectedIndex);
       },
     );
   }
