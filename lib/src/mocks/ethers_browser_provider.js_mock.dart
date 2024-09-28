@@ -24,7 +24,7 @@ class JSEthersBrowserProvider {
 
   JSPromise<JSEthersSigner> getSigner() => JSPromise(jsEthersSigner);
 
-  JSPromise<JSString?> lookupAddress(JSString address) => JSPromise(const JSString(""));
+  JSPromise<JSString?> lookupAddress(JSString address) => JSPromise(const JSString("mock.eth"));
 
   JSPromise<JSEthersNetwork> getNetwork() => JSPromise(getNetworkResult);
 }
