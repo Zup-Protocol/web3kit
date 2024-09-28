@@ -93,7 +93,10 @@ extension JSBigIntToObject on JSBigInt {
 
 @internal
 extension JSPromiseToFuture<T> on JSPromise<T> {
-  Future<T> get toDart async => await Future.value(value);
+  Future<T> get toDart async {
+    await Future.delayed(const Duration(milliseconds: 0));
+    return await Future.value(value);
+  }
 }
 
 @internal
