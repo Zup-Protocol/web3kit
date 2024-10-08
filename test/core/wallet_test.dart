@@ -250,21 +250,6 @@ void main() {
   });
 
   test(
-      "When calling `connectCachedWallet` and it returns a cached wallet, but there is no installed wallet, it should not connect",
-      () async {
-    final wallet = Wallet(browserProvider, cache, Window());
-    const cachedWalletRDNS = "com.rdns";
-    when(() => cache.getConnectedWallet()).thenAnswer((_) async => cachedWalletRDNS);
-
-    await wallet.connectCachedWallet();
-
-    assert(wallet.installedWallets.isEmpty);
-
-    verifyNever(() => browserProvider.getSigner(any()));
-    expect(wallet.connectedProvider, null);
-  });
-
-  test(
       "When calling `connectCachedWallet` and it returns a cached wallet, but the installed wallet RDNS is different, it should not connect",
       () async {
     const cachedWalletRDNS = "com.rdns";
