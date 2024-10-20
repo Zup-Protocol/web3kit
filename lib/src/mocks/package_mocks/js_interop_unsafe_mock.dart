@@ -6,4 +6,8 @@ extension JSObjectUnsafeUtilExtension on JSObject {
   void setProperty(JSAny property, JSAny? value) {
     properties[property] = value;
   }
+
+  R getProperty<R extends JSAny?>(JSAny property) {
+    return properties[property] as R;
+  }
 }

@@ -42,6 +42,7 @@ class LauncherMock extends Mock implements Launcher {}
 
 class WalletDetailMock extends Mock implements WalletDetail {}
 
+// ignore: must_be_immutable
 class CustomJSEthereumProviderMock extends JSEthereumProvider {
   Map<String, JSFunction> callbacks = {};
   JSObject? lastRequestObject;

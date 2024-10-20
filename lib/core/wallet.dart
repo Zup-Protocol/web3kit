@@ -19,7 +19,7 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 
 /// Object to interact with Web3 wallets.
-/// Can perform actions like connect, send transactions, verify if specific wallet is installed, etc...
+/// Can perform actions like connect, verify if specific wallet is installed, etc...
 class Wallet {
   Wallet(this._browserProvider, this._cache, this._window) {
     _getInstalledWallets();

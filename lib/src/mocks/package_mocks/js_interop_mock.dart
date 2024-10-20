@@ -1,31 +1,26 @@
 import "package:equatable/equatable.dart";
 import "package:freezed_annotation/freezed_annotation.dart";
 
-@internal
 class JS {
   final String? name;
   const JS([this.name]);
 }
 
-@internal
 class JSObject extends Equatable implements JSAny {
   bool isA<T extends JSObject?>() => true;
 
   /// Warning: THIS FUNCTION DOES NOT EXIST IN THE REAL IMPLEMENTATION. ONLY IN THE MOCK
-  @internal
+
   final Map<JSAny, JSAny?> properties = {};
 
   @override
   List<Object?> get props => [properties];
 }
 
-@internal
 typedef JSAnyRepType = Object;
 
-@internal
 class JSAny {}
 
-@internal
 class JSPromise<T> {
   JSPromise(this.value);
 
@@ -33,8 +28,7 @@ class JSPromise<T> {
   T value;
 }
 
-@internal
-class JSString<T> extends Equatable implements JSAny {
+class JSString extends Equatable implements JSAny {
   @visibleForTesting
   final String name;
 
@@ -44,16 +38,16 @@ class JSString<T> extends Equatable implements JSAny {
   List<Object?> get props => [name];
 }
 
-@internal
+class JSBoolean implements JSAny {}
+
 class JSFunction {
   JSFunction(this.dartFunction);
 
   /// Warning: THIS FUNCTION DOES NOT EXIST IN THE REAL IMPLEMENTATION. ONLY IN THE MOCK
-  @internal
+
   final Function dartFunction;
 }
 
-@internal
 class JSArray<T> extends Equatable implements JSAny {
   const JSArray(this.list);
 
@@ -64,7 +58,6 @@ class JSArray<T> extends Equatable implements JSAny {
   List<Object?> get props => [list];
 }
 
-@internal
 class JSNumber extends Equatable implements JSAny {
   const JSNumber(this.value);
 
@@ -75,7 +68,6 @@ class JSNumber extends Equatable implements JSAny {
   List<Object?> get props => [value];
 }
 
-@internal
 class JSBigInt implements JSAny {
   JSBigInt(this.value);
 
@@ -91,7 +83,6 @@ extension JSBigIntToObject on JSBigInt {
   Object? dartify() => null;
 }
 
-@internal
 extension JSPromiseToFuture<T> on JSPromise<T> {
   Future<T> get toDart async {
     await Future.delayed(const Duration(milliseconds: 0));
@@ -99,37 +90,34 @@ extension JSPromiseToFuture<T> on JSPromise<T> {
   }
 }
 
-@internal
 extension StringToJSString on String {
   JSString get toJS => JSString(this);
 }
 
-@internal
 extension JSStringToString on JSString {
   String get toDart => name;
 }
 
-@internal
+extension JSBooleanToBool on JSBoolean {
+  bool get toDart => true;
+}
+
 extension FunctionToJSFunction on Function {
   JSFunction get toJS => JSFunction(this);
 }
 
-@internal
 extension JSArrayToList<T> on JSArray<T> {
   List<T> get toDart => list;
 }
 
-@internal
 extension ListToJSArray<T> on List<T> {
   JSArray<T> jsify() => JSArray<T>(this);
 }
 
-@internal
 extension JSNumberToInt on JSNumber {
   int get toDartInt => value.toInt();
 }
 
-@internal
 extension IntToJSNumber on int {
   JSNumber get toJS => JSNumber(this);
 }

@@ -3,9 +3,16 @@ include: package:flutter_lints/flutter.yaml
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 
+analyzer:
+  exclude:
+    - "**.freezed.dart"
+    - "**.g.dart"
+  errors:
+    invalid_annotation_target: ignore
+
 linter:
   rules:
     always_declare_return_types: true
     avoid_annotating_with_dynamic: false
-    avoid_as: true
+    conditional_uri_does_not_exist: true
     prefer_double_quotes: true
