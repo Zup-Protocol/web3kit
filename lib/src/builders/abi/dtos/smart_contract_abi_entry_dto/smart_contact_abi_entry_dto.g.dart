@@ -15,10 +15,15 @@ _$SmartContractAbiEntryDtoImpl _$$SmartContractAbiEntryDtoImplFromJson(
           SmartContractAbiEntryType.unknown,
       name: json['name'] as String? ?? "",
       outputs: (json['outputs'] as List<dynamic>?)
-              ?.map((e) =>
-                  SmartContractAbiOutputDto.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => SmartContractAbiSignatureDto.fromJson(
+                  e as Map<String, dynamic>))
               .toList() ??
-          const <SmartContractAbiOutputDto>[],
+          const <SmartContractAbiSignatureDto>[],
+      inputs: (json['inputs'] as List<dynamic>?)
+              ?.map((e) => SmartContractAbiSignatureDto.fromJson(
+                  e as Map<String, dynamic>))
+              .toList() ??
+          const <SmartContractAbiSignatureDto>[],
     );
 
 Map<String, dynamic> _$$SmartContractAbiEntryDtoImplToJson(
@@ -27,6 +32,7 @@ Map<String, dynamic> _$$SmartContractAbiEntryDtoImplToJson(
       'type': _$SmartContractAbiEntryTypeEnumMap[instance.type]!,
       'name': instance.name,
       'outputs': instance.outputs.map((e) => e.toJson()).toList(),
+      'inputs': instance.inputs.map((e) => e.toJson()).toList(),
     };
 
 const _$SmartContractAbiEntryTypeEnumMap = {

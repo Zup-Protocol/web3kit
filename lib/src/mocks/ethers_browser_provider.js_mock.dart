@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import "package:flutter/foundation.dart";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart";
 import "package:web3kit/src/mocks/ethers_network.js_mock.dart";

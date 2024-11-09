@@ -9,13 +9,13 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 
 /// Signer of a connected Wallet.
 class Signer {
-  Signer(this._ethersSigner, this._ethersBrowserProvider);
+  Signer(this.ethersSigner, this._ethersBrowserProvider);
 
-  final JSEthersSigner _ethersSigner;
+  final JSEthersSigner ethersSigner;
   final JSEthersBrowserProvider _ethersBrowserProvider;
 
   /// Get the address of the connected wallet
-  Future<String> get address async => (await _ethersSigner.getAddress().toDart).toDart;
+  Future<String> get address async => (await ethersSigner.getAddress().toDart).toDart;
 
   /// get the ENS name of the connected wallet (if available). If non-existent, returns null
   Future<String?> get ensName async {

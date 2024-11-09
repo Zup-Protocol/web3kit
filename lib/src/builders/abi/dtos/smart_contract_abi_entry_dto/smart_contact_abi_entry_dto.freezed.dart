@@ -24,7 +24,9 @@ mixin _$SmartContractAbiEntryDto {
   @JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
   SmartContractAbiEntryType get type => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  List<SmartContractAbiOutputDto> get outputs =>
+  List<SmartContractAbiSignatureDto> get outputs =>
+      throw _privateConstructorUsedError;
+  List<SmartContractAbiSignatureDto> get inputs =>
       throw _privateConstructorUsedError;
 
   /// Serializes this SmartContractAbiEntryDto to a JSON map.
@@ -47,7 +49,8 @@ abstract class $SmartContractAbiEntryDtoCopyWith<$Res> {
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       SmartContractAbiEntryType type,
       String name,
-      List<SmartContractAbiOutputDto> outputs});
+      List<SmartContractAbiSignatureDto> outputs,
+      List<SmartContractAbiSignatureDto> inputs});
 }
 
 /// @nodoc
@@ -69,6 +72,7 @@ class _$SmartContractAbiEntryDtoCopyWithImpl<$Res,
     Object? type = null,
     Object? name = null,
     Object? outputs = null,
+    Object? inputs = null,
   }) {
     return _then(_value.copyWith(
       type: null == type
@@ -82,7 +86,11 @@ class _$SmartContractAbiEntryDtoCopyWithImpl<$Res,
       outputs: null == outputs
           ? _value.outputs
           : outputs // ignore: cast_nullable_to_non_nullable
-              as List<SmartContractAbiOutputDto>,
+              as List<SmartContractAbiSignatureDto>,
+      inputs: null == inputs
+          ? _value.inputs
+          : inputs // ignore: cast_nullable_to_non_nullable
+              as List<SmartContractAbiSignatureDto>,
     ) as $Val);
   }
 }
@@ -100,7 +108,8 @@ abstract class _$$SmartContractAbiEntryDtoImplCopyWith<$Res>
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       SmartContractAbiEntryType type,
       String name,
-      List<SmartContractAbiOutputDto> outputs});
+      List<SmartContractAbiSignatureDto> outputs,
+      List<SmartContractAbiSignatureDto> inputs});
 }
 
 /// @nodoc
@@ -121,6 +130,7 @@ class __$$SmartContractAbiEntryDtoImplCopyWithImpl<$Res>
     Object? type = null,
     Object? name = null,
     Object? outputs = null,
+    Object? inputs = null,
   }) {
     return _then(_$SmartContractAbiEntryDtoImpl(
       type: null == type
@@ -134,7 +144,11 @@ class __$$SmartContractAbiEntryDtoImplCopyWithImpl<$Res>
       outputs: null == outputs
           ? _value._outputs
           : outputs // ignore: cast_nullable_to_non_nullable
-              as List<SmartContractAbiOutputDto>,
+              as List<SmartContractAbiSignatureDto>,
+      inputs: null == inputs
+          ? _value._inputs
+          : inputs // ignore: cast_nullable_to_non_nullable
+              as List<SmartContractAbiSignatureDto>,
     ));
   }
 }
@@ -147,9 +161,12 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       this.type = SmartContractAbiEntryType.unknown,
       this.name = "",
-      final List<SmartContractAbiOutputDto> outputs =
-          const <SmartContractAbiOutputDto>[]})
-      : _outputs = outputs;
+      final List<SmartContractAbiSignatureDto> outputs =
+          const <SmartContractAbiSignatureDto>[],
+      final List<SmartContractAbiSignatureDto> inputs =
+          const <SmartContractAbiSignatureDto>[]})
+      : _outputs = outputs,
+        _inputs = inputs;
 
   factory _$SmartContractAbiEntryDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$SmartContractAbiEntryDtoImplFromJson(json);
@@ -160,18 +177,27 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
   @override
   @JsonKey()
   final String name;
-  final List<SmartContractAbiOutputDto> _outputs;
+  final List<SmartContractAbiSignatureDto> _outputs;
   @override
   @JsonKey()
-  List<SmartContractAbiOutputDto> get outputs {
+  List<SmartContractAbiSignatureDto> get outputs {
     if (_outputs is EqualUnmodifiableListView) return _outputs;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_outputs);
   }
 
+  final List<SmartContractAbiSignatureDto> _inputs;
+  @override
+  @JsonKey()
+  List<SmartContractAbiSignatureDto> get inputs {
+    if (_inputs is EqualUnmodifiableListView) return _inputs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_inputs);
+  }
+
   @override
   String toString() {
-    return 'SmartContractAbiEntryDto(type: $type, name: $name, outputs: $outputs)';
+    return 'SmartContractAbiEntryDto(type: $type, name: $name, outputs: $outputs, inputs: $inputs)';
   }
 
   @override
@@ -181,13 +207,18 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
             other is _$SmartContractAbiEntryDtoImpl &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.name, name) || other.name == name) &&
-            const DeepCollectionEquality().equals(other._outputs, _outputs));
+            const DeepCollectionEquality().equals(other._outputs, _outputs) &&
+            const DeepCollectionEquality().equals(other._inputs, _inputs));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, type, name, const DeepCollectionEquality().hash(_outputs));
+      runtimeType,
+      type,
+      name,
+      const DeepCollectionEquality().hash(_outputs),
+      const DeepCollectionEquality().hash(_inputs));
 
   /// Create a copy of SmartContractAbiEntryDto
   /// with the given fields replaced by the non-null parameter values.
@@ -211,7 +242,8 @@ abstract class _SmartContractAbiEntryDto implements SmartContractAbiEntryDto {
           {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
           final SmartContractAbiEntryType type,
           final String name,
-          final List<SmartContractAbiOutputDto> outputs}) =
+          final List<SmartContractAbiSignatureDto> outputs,
+          final List<SmartContractAbiSignatureDto> inputs}) =
       _$SmartContractAbiEntryDtoImpl;
 
   factory _SmartContractAbiEntryDto.fromJson(Map<String, dynamic> json) =
@@ -223,7 +255,9 @@ abstract class _SmartContractAbiEntryDto implements SmartContractAbiEntryDto {
   @override
   String get name;
   @override
-  List<SmartContractAbiOutputDto> get outputs;
+  List<SmartContractAbiSignatureDto> get outputs;
+  @override
+  List<SmartContractAbiSignatureDto> get inputs;
 
   /// Create a copy of SmartContractAbiEntryDto
   /// with the given fields replaced by the non-null parameter values.

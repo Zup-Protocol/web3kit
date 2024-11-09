@@ -14,7 +14,8 @@ class SmartContractAbiEntryDto with _$SmartContractAbiEntryDto {
     @JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
     SmartContractAbiEntryType type,
     @Default("") String name,
-    @Default(<SmartContractAbiOutputDto>[]) List<SmartContractAbiOutputDto> outputs,
+    @Default(<SmartContractAbiSignatureDto>[]) List<SmartContractAbiSignatureDto> outputs,
+    @Default(<SmartContractAbiSignatureDto>[]) List<SmartContractAbiSignatureDto> inputs,
   }) = _SmartContractAbiEntryDto;
 
   factory SmartContractAbiEntryDto.fromJson(Map<String, dynamic> json) => _$SmartContractAbiEntryDtoFromJson(json);

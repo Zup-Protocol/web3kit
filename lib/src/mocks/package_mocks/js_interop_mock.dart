@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import "package:equatable/equatable.dart";
 import "package:freezed_annotation/freezed_annotation.dart";
 
@@ -44,7 +46,6 @@ class JSFunction {
   JSFunction(this.dartFunction);
 
   /// Warning: THIS FUNCTION DOES NOT EXIST IN THE REAL IMPLEMENTATION. ONLY IN THE MOCK
-
   final Function dartFunction;
 }
 

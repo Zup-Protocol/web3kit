@@ -6,10 +6,10 @@ import "package:flutter_test/flutter_test.dart";
 import "package:golden_toolkit/golden_toolkit.dart";
 import "package:mocktail/mocktail.dart";
 import "package:web3kit/web3kit.dart";
+import "package:zup_core/zup_core.dart";
 
 import "../mocks.dart";
 import "golden_config.dart";
-import "helpers.dart";
 
 void main() {
   late Wallet wallet;

@@ -6,16 +6,16 @@ part of 'smart_contract_abi_output_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SmartContractAbiOutputDtoImpl _$$SmartContractAbiOutputDtoImplFromJson(
+_$SmartContractAbiSignatureDtoImpl _$$SmartContractAbiSignatureDtoImplFromJson(
         Map<String, dynamic> json) =>
-    _$SmartContractAbiOutputDtoImpl(
+    _$SmartContractAbiSignatureDtoImpl(
       name: json['name'] as String? ?? "",
       type: json['type'] as String,
       internalType: json['internalType'] as String? ?? "",
     );
 
-Map<String, dynamic> _$$SmartContractAbiOutputDtoImplToJson(
-        _$SmartContractAbiOutputDtoImpl instance) =>
+Map<String, dynamic> _$$SmartContractAbiSignatureDtoImplToJson(
+        _$SmartContractAbiSignatureDtoImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
       'type': instance.type,

@@ -33,6 +33,8 @@ dependencies:
   shared_preferences_platform_interface: ^2.4.1
   url_launcher: ^6.3.0
   web: ^1.0.0
+  zup_core:
+    path: ../zup_core
   zup_ui_kit:
     path: ../zup_ui_kit
     # git:
@@ -49,6 +51,7 @@ dev_dependencies:
   golden_toolkit: ^0.15.0
   mocktail_image_network: ^1.2.0
   json_serializable: ^6.8.0
+  build_test: ^2.2.2
 
 flutter_gen:
   output: lib/src/gen/

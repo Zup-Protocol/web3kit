@@ -9,6 +9,7 @@ import "package:web3kit/core/dtos/wallet_detail.dart";
 import "package:web3kit/core/ethereum_provider.dart";
 import "package:web3kit/core/signer.dart";
 import "package:web3kit/core/wallet.dart";
+import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/launcher.dart";
@@ -41,6 +42,10 @@ class JSEthersBrowserProviderMock extends Mock implements JSEthersBrowserProvide
 class LauncherMock extends Mock implements Launcher {}
 
 class WalletDetailMock extends Mock implements WalletDetail {}
+
+class Erc20Mock extends Mock implements Erc20 {}
+
+class Erc20ImplMock extends Mock implements Erc20Impl {}
 
 // ignore: must_be_immutable
 class CustomJSEthereumProviderMock extends JSEthereumProvider {

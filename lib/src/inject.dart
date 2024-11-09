@@ -3,6 +3,7 @@ import "package:get_it/get_it.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:web3kit/core/browser_provider.dart";
 import "package:web3kit/core/wallet.dart";
+import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/launcher.dart";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
@@ -34,7 +35,13 @@ class Inject {
     _getIt.registerLazySingleton<BrowserProvider>(() => BrowserProvider());
     _getIt.registerLazySingleton<Window>(() => window);
     _getIt.registerLazySingleton<Launcher>(() => Launcher());
-    _getIt.registerLazySingleton<Wallet>(() => Wallet(_getIt<BrowserProvider>(), _getIt<Cache>(), _getIt<Window>()));
+    _getIt.registerLazySingleton<Erc20>(() => Erc20());
+    _getIt.registerLazySingleton<Wallet>(() => Wallet(
+          _getIt<BrowserProvider>(),
+          _getIt<Cache>(),
+          _getIt<Window>(),
+          _getIt<Erc20>(),
+        ));
 
     await _getIt.allReady();
 
