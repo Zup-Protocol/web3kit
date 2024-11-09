@@ -3,6 +3,7 @@ import "package:mocktail/mocktail.dart";
 import "package:web3kit/core/core.dart";
 import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
 import "package:web3kit/core/exceptions/ethers_exceptions.dart";
+import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_event.dart";
@@ -39,19 +40,23 @@ void main() {
   late Cache cache;
   late Window window;
   late Wallet sut;
+  late Erc20 erc20;
+  late Signer signer;
 
   setUp(() {
     browserProvider = BrowserProviderMock();
     cache = CacheMock();
     window = _CustomWindowMock();
-    final signer = SignerMock();
+    erc20 = Erc20Mock();
+    signer = SignerMock();
 
-    sut = Wallet(browserProvider, cache, window);
+    sut = Wallet(browserProvider, cache, window, erc20);
 
     registerFallbackValue(JSFunction(() {}));
     registerFallbackValue(const JSString(""));
     registerFallbackValue(EthereumProviderMock());
     registerFallbackValue(const ChainInfo(hexChainId: ""));
+    registerFallbackValue(signer);
 
     mockInjections(customBrowserProvider: browserProvider, customWallet: sut);
 
@@ -108,7 +113,7 @@ void main() {
         ));
       }
 
-      final wallet = Wallet(browserProvider, cache, window0);
+      final wallet = Wallet(browserProvider, cache, window0, erc20);
 
       expectLater(wallet.signerStream, emitsInOrder(List.generate(walletsAmount, (index) => anything)));
 
@@ -144,7 +149,7 @@ void main() {
         ),
       ));
 
-      final wallet = Wallet(browserProvider, cache, window0);
+      final wallet = Wallet(browserProvider, cache, window0, erc20);
       await provider.callRegisteredEvent(
           EthereumEvent.accountsChanged.name, <JSString>[currentConnectedSignerAddress.toJS].jsify());
 
@@ -182,7 +187,7 @@ void main() {
         ),
       ));
 
-      final wallet = Wallet(browserProvider, cache, window0);
+      final wallet = Wallet(browserProvider, cache, window0, erc20);
 
       expectLater(wallet.signerStream, emits(signer));
 
@@ -226,7 +231,7 @@ void main() {
         ),
       ));
 
-      final wallet = Wallet(browserProvider, cache, window0);
+      final wallet = Wallet(browserProvider, cache, window0, erc20);
       expectLater(wallet.signerStream, emitsInOrder([signer1, signer2]));
 
       when(() => browserProvider.getSigner(any())).thenAnswer((_) async => signer1);
@@ -606,6 +611,30 @@ void main() {
     verify(() => ethereumProvider.switchChain(chainId)).called(1);
   });
 
+  test("When calling `switchNetwork` it should get a the new signer and update it", () async {
+    const chainId = "0x1";
+    final ethereumProvider = EthereumProviderMock();
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"),
+      provider: ethereumProvider,
+    );
+
+    final newSigner = SignerMock();
+
+    when(() => ethereumProvider.switchChain(any())).thenAnswer((_) async => () {});
+
+    await sut.connect(walletDetail);
+
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => newSigner);
+
+    /// note that the test will not fail if this is not emitted, but instead it will wait forever until timeout
+    expectLater(sut.signerStream, emits(newSigner));
+
+    await sut.switchNetwork(chainId);
+
+    verify(() => browserProvider.getSigner(ethereumProvider)).called(2); // 1 of the connect and 1 of the switch
+  });
+
   test(
       "When calling `switchNetwork` and the provider throw an error that the chain is not supported, it should throw an custom error",
       () async {
@@ -697,14 +726,106 @@ void main() {
   test("When calling `connectedNetwork`, it should ask for the browser provider to get the connected network",
       () async {
     const connectedNetwork = ChainInfo(hexChainId: "0x1");
-    when(() => browserProvider.getNetwork(any())).thenAnswer((_) async => connectedNetwork);
-
     final ethereumProvider = EthereumProviderMock();
     final walletDetail =
         WalletDetail(info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"), provider: ethereumProvider);
 
+    when(() => browserProvider.getNetwork(any())).thenAnswer((_) async => connectedNetwork);
+
     await sut.connect(walletDetail);
 
     expect(await sut.connectedNetwork, connectedNetwork);
+  });
+
+  test("When calling `tokenBalance` but there's no connected signer, it should assert", () {
+    expect(() async => await sut.tokenBalance("0x1"), throwsAssertionError);
+  });
+
+  test("When calling `tokenBalance` with a rpc url, it should use the rpc url to make the request", () async {
+    final ethereumProvider = EthereumProviderMock();
+    final erc20Impl = Erc20ImplMock();
+    const tokenAddress = "0x1";
+    const rpcUrl = "https://dale.com";
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"),
+      provider: ethereumProvider,
+    );
+
+    when(() => erc20.fromRpcProvider(contractAddress: any(named: "contractAddress"), rpcUrl: any(named: "rpcUrl")))
+        .thenReturn(erc20Impl);
+    when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.one);
+    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => BigInt.one);
+
+    await sut.connect(walletDetail);
+
+    await sut.tokenBalance(
+      tokenAddress,
+      rpcUrl: rpcUrl,
+    );
+
+    verify(
+      () => erc20.fromRpcProvider(
+        contractAddress: tokenAddress,
+        rpcUrl: rpcUrl,
+      ),
+    );
+
+    verifyNever(() => erc20.fromSigner(contractAddress: any(named: "contractAddress"), signer: any(named: "signer")));
+  });
+
+  test("When calling `tokenBalance` without a rpc url, it should use the signer provider to make the request",
+      () async {
+    final ethereumProvider = EthereumProviderMock();
+    final erc20Impl = Erc20ImplMock();
+    const tokenAddress = "0x1";
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"),
+      provider: ethereumProvider,
+    );
+
+    when(() => erc20.fromSigner(contractAddress: tokenAddress, signer: signer)).thenReturn(erc20Impl);
+    when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.one);
+    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => BigInt.one);
+
+    await sut.connect(walletDetail);
+
+    await sut.tokenBalance(tokenAddress);
+
+    verify(
+      () => erc20.fromSigner(
+        contractAddress: tokenAddress,
+        signer: signer,
+      ),
+    );
+
+    verifyNever(
+      () => erc20.fromRpcProvider(contractAddress: any(named: "contractAddress"), rpcUrl: any(named: "rpcUrl")),
+    );
+  });
+
+  test(
+      "When calling `tokenBalance` it should return the wallet balance parsed with the common decimals (not 1200000000 instead of 1.2)",
+      () async {
+    final ethereumProvider = EthereumProviderMock();
+    final erc20Impl = Erc20ImplMock();
+    const tokenAddress = "0x1";
+    final tokenBalance = BigInt.from(150000000000000000); // 0.15 * 10^(decimals)
+    final tokenDecimals = BigInt.from(18);
+    const tokenBalanceFormatted = 0.15;
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "name", icon: "icon", rdns: "rdns"),
+      provider: ethereumProvider,
+    );
+
+    when(() => erc20.fromSigner(contractAddress: tokenAddress, signer: signer)).thenReturn(erc20Impl);
+    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => tokenBalance);
+    when(() => erc20Impl.decimals()).thenAnswer((_) async => tokenDecimals);
+
+    await sut.connect(walletDetail);
+
+    expect(await sut.tokenBalance(tokenAddress), tokenBalanceFormatted);
   });
 }

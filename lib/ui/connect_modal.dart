@@ -14,7 +14,7 @@ class ConnectModal extends StatelessWidget {
 
   static Future<void> show(
     BuildContext context, {
-    required Function(Signer signer)? onConnectWallet,
+    Function(Signer signer)? onConnectWallet,
   }) async {
     ZupModal.show(
       context,

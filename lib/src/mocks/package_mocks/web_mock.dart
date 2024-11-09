@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import "package:freezed_annotation/freezed_annotation.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/mocks/eip_6963_detail.js_mock.dart";

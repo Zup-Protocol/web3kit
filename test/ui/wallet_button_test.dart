@@ -8,10 +8,10 @@ import "package:mocktail/mocktail.dart";
 import "package:web3kit/core/core.dart";
 import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 import "package:web3kit/ui/wallet_button.dart";
+import "package:zup_core/zup_core.dart";
 
 import "../mocks.dart";
 import "golden_config.dart";
-import "helpers.dart";
 
 void main() {
   late WalletMock wallet;

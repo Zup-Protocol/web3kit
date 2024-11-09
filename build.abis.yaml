@@ -1,0 +1,10 @@
+builders:
+  smartContractAbiBuilder:
+    import: "package:web3kit/src/builders/builders.dart"
+    builder_factories: ["smartContractAbiBuilder"]
+    is_optional: true
+    build_extensions:
+      ".abi.json":
+        - .abi.dart
+    build_to: source
+    auto_apply: dependents

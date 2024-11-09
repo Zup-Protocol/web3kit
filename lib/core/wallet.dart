@@ -4,6 +4,7 @@ import "package:collection/collection.dart";
 import "package:web3kit/core/core.dart";
 import "package:web3kit/core/exceptions/ethereum_request_exceptions.dart";
 import "package:web3kit/core/exceptions/ethers_exceptions.dart";
+import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_request_error.dart";
@@ -19,19 +20,20 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 
 /// Object to interact with Web3 wallets.
-/// Can perform actions like connect, send transactions, verify if specific wallet is installed, etc...
+/// Can perform actions like connect, verify if specific wallet is installed, etc...
 class Wallet {
-  Wallet(this._browserProvider, this._cache, this._window) {
+  Wallet(this._browserProvider, this._cache, this._window, this._erc20) {
     _getInstalledWallets();
     _setupStreams();
   }
+  final BrowserProvider _browserProvider;
+  final Cache _cache;
+  final Window _window;
+  final Erc20 _erc20;
 
   /// Access the singleton instance of the Wallet Object
   static Wallet get shared => Inject.shared.wallet;
 
-  final BrowserProvider _browserProvider;
-  final Cache _cache;
-  final Window _window;
   final StreamController<Signer?> _signerStreamController = StreamController<Signer?>.broadcast();
   final List<WalletDetail> _installedWallets = [];
   EthereumProvider? _connectedProvider;
@@ -81,12 +83,6 @@ class Wallet {
   }
 
   void _updateSigner(Signer? newSigner) async {
-    final List<String?> newAndOldSigner = await Future.wait<String?>(
-      [signer?.address ?? Future.value(null), newSigner?.address ?? Future.value(null)],
-    );
-
-    if (newAndOldSigner.first == newAndOldSigner.last) return;
-
     _signer = newSigner;
     _signerStreamController.add(newSigner);
   }
@@ -122,6 +118,7 @@ class Wallet {
 
     try {
       await _connectedProvider!.switchChain(hexChainId);
+      _updateSigner(await _browserProvider.getSigner(_connectedProvider!));
     } catch (e) {
       bool isEthereumRequestError = (e is JSEthereumRequestError);
 
@@ -210,5 +207,34 @@ class Wallet {
     }
 
     _connectedProvider = null;
+  }
+
+  /// Get a specific token balance of the connected wallet.
+  ///
+  /// `tokenAddress` is the address of the token to get the balance of.
+  ///
+  /// if the `rpcUrl` is provided, it will use the `rpcUrl` to get the balance.
+  /// Otherwise, it will use the `signer` to get the balance, note that the `signer`
+  /// must be in the same network as the token, to ensure it, you can use [switchNetwork].
+  /// If the user network is not the same as the token network, it will throw an error
+  ///
+  /// Note that it will return the balance with common decimals
+  /// (e.g `1.0` instead of `1000000000000000000`)
+  Future<double> tokenBalance(String tokenAddress, {String? rpcUrl}) async {
+    assert(signer != null, "Wallet should be connected to get token balance");
+
+    Erc20Impl contract;
+
+    if (rpcUrl != null) {
+      contract = _erc20.fromRpcProvider(contractAddress: tokenAddress, rpcUrl: rpcUrl);
+    } else {
+      contract = _erc20.fromSigner(contractAddress: tokenAddress, signer: signer!);
+    }
+
+    final balance = await contract.balanceOf(await signer!.address);
+    final tokenDecimals = (await contract.decimals()).toInt();
+    final balanceParsed = balance.parseTokenAmount(decimals: tokenDecimals);
+
+    return balanceParsed;
   }
 }
