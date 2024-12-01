@@ -174,7 +174,7 @@ class _AbiContractInstanceGenerator {
           }
 
           method.body = Block((code) {
-            code.addExpression(refer("EthereumEncoder").property("encodeWithSignature").call(
+            code.addExpression(refer("EthereumCalldataEncoder").property("encodeWithSignature").call(
               [],
               {
                 "signature": literal(
