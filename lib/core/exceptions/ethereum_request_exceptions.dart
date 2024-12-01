@@ -1,6 +1,6 @@
-class EthereumRequestException implements Exception {}
+class _EthereumRequestException implements Exception {}
 
-class UnrecognizedChainId implements EthereumRequestException {
+class UnrecognizedChainId implements _EthereumRequestException {
   UnrecognizedChainId(this.hexChainId);
 
   final String hexChainId;

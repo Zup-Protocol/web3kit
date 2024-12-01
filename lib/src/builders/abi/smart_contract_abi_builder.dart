@@ -6,8 +6,10 @@ import "package:code_builder/code_builder.dart";
 import "package:collection/collection.dart";
 import "package:dart_style/dart_style.dart";
 import "package:freezed_annotation/freezed_annotation.dart" hide literal;
+import "package:intl/intl.dart";
 import "package:web3kit/src/builders/abi/dtos/smart_contract_abi_dto/smart_contract_abi_dto.dart";
 import "package:web3kit/src/builders/abi/dtos/smart_contract_abi_entry_dto/smart_contact_abi_entry_dto.dart";
+import "package:web3kit/src/builders/abi/dtos/smart_contract_abi_signature_dto/smart_contract_abi_signature_dto.dart";
 import "package:web3kit/src/extensions/string_extension.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 
@@ -55,11 +57,17 @@ class SmartContractAbiBuilder implements Builder {
 // coverage:ignore-file
 // ignore_for_file: implementation_imports
 
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
+import "package:web3kit/core/ethereum_calldata_encoder.dart";
 import "package:web3kit/core/signer.dart";
-import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) 'dart:js_interop';
-import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart" if (dart.library.html) 'dart:js_interop_unsafe';
+import "package:web3kit/src/extensions/bigint_extension.dart";
+import "package:web3kit/core/dtos/transaction_response.dart";
+import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
+import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart" if (dart.library.html) "dart:js_interop_unsafe";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethereum_provider.js.dart";
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethers/ethers_signer.js.dart";
+import "package:web3kit/src/mocks/utils.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/utils.js.dart";
+import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethers/ethers_contract_transaction_response.js.dart";
 
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
@@ -102,17 +110,20 @@ class _Generator {
 
   late final abiImplClassName = "${abiContractClassName}Impl";
 
-  Library generate() => Library(
-        (library) {
-          library.body.addAll(_AbiContractInstanceGenerator(
-            abiAsString: stringAbi,
-            className: abiContractClassName,
-            implClassName: abiImplClassName,
-          ).code);
+  Library generate() {
+    return Library(
+      (library) {
+        library.body.addAll(_AbiContractInstanceGenerator(
+          abi: abi,
+          abiAsString: stringAbi,
+          className: abiContractClassName,
+          implClassName: abiImplClassName,
+        ).code);
 
-          library.body.addAll(_AbiContractImplGenerator(abiImplClassName, abi).code);
-          library.body.addAll(_JSEthersContractExtensionGenerator(abi: abi).code);
-          library.body.addAll(_JSEthersJsonRpcProviderGenerator().code);
-        },
-      );
+        library.body.addAll(_AbiContractImplGenerator(abiImplClassName, abi).code);
+        library.body.addAll(_JSEthersContractExtensionGenerator(abi: abi).code);
+        library.body.addAll(_JSEthersJsonRpcProviderGenerator().code);
+      },
+    );
+  }
 }

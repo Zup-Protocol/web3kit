@@ -755,7 +755,7 @@ void main() {
     when(() => erc20.fromRpcProvider(contractAddress: any(named: "contractAddress"), rpcUrl: any(named: "rpcUrl")))
         .thenReturn(erc20Impl);
     when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.one);
-    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => BigInt.one);
+    when(() => erc20Impl.balanceOf(account: any(named: "account"))).thenAnswer((_) async => BigInt.one);
 
     await sut.connect(walletDetail);
 
@@ -787,7 +787,7 @@ void main() {
 
     when(() => erc20.fromSigner(contractAddress: tokenAddress, signer: signer)).thenReturn(erc20Impl);
     when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.one);
-    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => BigInt.one);
+    when(() => erc20Impl.balanceOf(account: any(named: "account"))).thenAnswer((_) async => BigInt.one);
 
     await sut.connect(walletDetail);
 
@@ -821,7 +821,7 @@ void main() {
     );
 
     when(() => erc20.fromSigner(contractAddress: tokenAddress, signer: signer)).thenReturn(erc20Impl);
-    when(() => erc20Impl.balanceOf(any())).thenAnswer((_) async => tokenBalance);
+    when(() => erc20Impl.balanceOf(account: any(named: "account"))).thenAnswer((_) async => tokenBalance);
     when(() => erc20Impl.decimals()).thenAnswer((_) async => tokenDecimals);
 
     await sut.connect(walletDetail);

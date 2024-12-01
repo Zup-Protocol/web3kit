@@ -50,54 +50,97 @@ class _AbiContractImplGenerator {
 
   List<Method> get _generateAbiMethodsAsDart {
     final List<Method> abiMethods = [];
+    final usedMethodNamesCount = <String, int>{};
 
     for (var entry in abi.entries) {
       if (entry.type != SmartContractAbiEntryType.function) continue;
       final bool hasMultipleOutputs = entry.outputs.length > 1;
       final bool isAllOutputsNamed = entry.outputs.every((output) => output.name.isNotEmpty);
+      final String outputVariableName = entry.stateMutability.isView ? "output" : "tx";
 
       String returnType() {
-        if (entry.outputs.isEmpty) return "<void>";
+        if (!entry.stateMutability.isView) return "<TransactionResponse>";
         final String maybeNamedTupleOpenString = isAllOutputsNamed ? "({" : "(";
         final String maybeNamedTupleCloseString = isAllOutputsNamed ? "})" : ")";
         final String maybeMultipleOutputOpenString = hasMultipleOutputs ? maybeNamedTupleOpenString : "";
         final String maybeMultipleOutputCloseString = hasMultipleOutputs ? maybeNamedTupleCloseString : "";
 
         return "<$maybeMultipleOutputOpenString ${entry.outputs.map((output) {
-          return "${smartContractTypeToDartType(output.type)}${isAllOutputsNamed ? " ${output.name}" : ""}";
+          return "${smartContractTypeToDartType(output)}${(isAllOutputsNamed && hasMultipleOutputs) ? " ${output.name}" : ""}";
         }).join(",")}$maybeMultipleOutputCloseString>";
       }
 
       String methodReturn() {
-        if (entry.outputs.isEmpty) return "";
+        if (entry.outputs.isEmpty && entry.stateMutability.isView) return "";
+        if (!entry.stateMutability.isView) {
+          return "return TransactionResponse.fromJS($outputVariableName);";
+        }
 
         return "return (${entry.outputs.mapIndexed((index, output) {
           final getPropertyMethod = '.getProperty<${smartContractTypeToDartJSType(output.type)}>("$index".toJS)';
-          final maybeNamedOutputString = isAllOutputsNamed ? "${output.name}:" : "";
+          final maybeNamedOutputString = (isAllOutputsNamed && hasMultipleOutputs) ? "${output.name}:" : "";
+          final maybeAwait = entry.stateMutability.isView ? "" : "await";
 
           final isBigIntReturn = smartContractTypeToDartJSType(output.type) == (JSBigInt).toString();
-          final outputAsJS = 'output${hasMultipleOutputs ? getPropertyMethod : ""}';
+          final outputAsJS = '$outputVariableName${hasMultipleOutputs ? getPropertyMethod : ""}';
 
           if (isBigIntReturn) {
             return "$maybeNamedOutputString BigInt.parse($outputAsJS.toString())";
           }
-          return "$maybeNamedOutputString $outputAsJS.toDart";
+
+          return "$maybeNamedOutputString $maybeAwait $outputAsJS${!(entry.stateMutability.isView) ? ".wait()" : ""}.toDart";
         }).join(",")});";
       }
 
       abiMethods.add(Method((method) {
+        usedMethodNamesCount[entry.name] = (usedMethodNamesCount[entry.name] ?? 0) + 1;
+        final methodName = usedMethodNamesCount[entry.name]! > 1
+            ? "${entry.name}${(usedMethodNamesCount[entry.name]! - 2)}"
+            : entry.name;
+
+        method.name = methodName;
         method.modifier = MethodModifier.async;
-        method.name = entry.name;
-        method.requiredParameters.addAll(entry.inputs.map((input) {
-          return Parameter((param) {
-            param.name = input.name;
-            param.named = true;
-            param.type = refer(smartContractTypeToDartType(input.type));
-          });
-        }));
+
+        if (usedMethodNamesCount[entry.name]! > 1) {
+          method.docs.addAll([
+            "/// [Warning]: Detected Duplicated Name, so renamed from [${entry.name}] to [${method.name}] to avoid conflicts and still make both methods available",
+          ]);
+        }
+
+        if (entry.inputs.every((input) => input.name.isNotEmpty)) {
+          method.optionalParameters.addAll(entry.inputs.map((input) {
+            return Parameter((param) {
+              param.name = input.name.removeUnderScores;
+              param.named = true;
+              param.required = true;
+              param.type = refer(smartContractTypeToDartType(input));
+            });
+          }));
+        } else {
+          method.requiredParameters.addAll(entry.inputs.mapIndexed((index, input) {
+            return Parameter((param) {
+              final paramName = input.name.removeUnderScores;
+
+              param.name = paramName.isNotEmpty ? paramName : "param$index";
+              param.named = true;
+              param.type = refer(smartContractTypeToDartType(input));
+            });
+          }));
+        }
+
         method.returns = refer("Future${returnType()}");
         method.body = Code("""
-        final output = (await $jsEthersContractFieldName.${entry.name}(${entry.inputs.map((input) => "${input.name}.toJS").join(",")}).toDart); 
+        final $outputVariableName = (await $jsEthersContractFieldName.$methodName(${entry.inputs.mapIndexed((index, input) {
+          final inputName = input.name.removeUnderScores.isNotEmpty ? input.name.removeUnderScores : "param$index";
+
+          if (input.type == "tuple") {
+            return "JSObject()${input.components.map((component) => '..setProperty("${component.name}".toJS, $inputName.${component.name}.toJS)').join("")}";
+          }
+
+          return "$inputName.toJS";
+        }).join(",")}).toDart.catchError((e) {
+      throw UserRejectedAction().tryParseError(e);
+    })); 
 
         ${methodReturn()}
 """);

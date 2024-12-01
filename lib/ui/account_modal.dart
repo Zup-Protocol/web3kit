@@ -65,7 +65,7 @@ class AccountModal extends StatelessWidget {
                                 context,
                                 message: Web3KitLocalizations.of(context).addressCopiedText,
                                 type: ZupSnackBarType.info,
-                                showCloseIcon: false,
+                                hideCloseIcon: true,
                                 snackDuration: const Duration(milliseconds: 2000),
                               ),
                             );

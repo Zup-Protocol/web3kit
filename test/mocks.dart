@@ -15,6 +15,7 @@ import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/launcher.dart";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart";
 import "package:web3kit/src/mocks/ethers_browser_provider.js_mock.dart";
+import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.dart";
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" hide Cache;
@@ -46,6 +47,8 @@ class WalletDetailMock extends Mock implements WalletDetail {}
 class Erc20Mock extends Mock implements Erc20 {}
 
 class Erc20ImplMock extends Mock implements Erc20Impl {}
+
+class JSEthersContractTransactionResponseMock extends Mock implements JSEthersContractTransactionResponse {}
 
 // ignore: must_be_immutable
 class CustomJSEthereumProviderMock extends JSEthereumProvider {

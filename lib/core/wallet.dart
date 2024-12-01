@@ -8,14 +8,11 @@ import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_request_error.dart";
-import "package:web3kit/src/enums/ethers_error_code.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
 import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_request_error.js.dart";
-import "package:web3kit/src/mocks/ethers_errors.js_mock.dart"
-    if (dart.library.html) "package:web3kit/src/js/ethers/ethers_error.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 
@@ -149,7 +146,7 @@ class Wallet {
     try {
       await switchNetwork(network.hexChainId);
     } catch (e) {
-      if (e is UnrecognizedChainId) return Wallet.shared.addNetwork(network);
+      if (e is UnrecognizedChainId) return addNetwork(network);
 
       rethrow;
     }
@@ -183,13 +180,7 @@ class Wallet {
       _cache.setWalletConnectionState(wallet.info.rdns);
       return newSigner;
     } catch (e) {
-      bool isEthersError = (e is JSObject && (e).isA<JSEthersError>());
-
-      if (isEthersError && (e as JSEthersError).code.toDart == EthersError.actionRejected.code) {
-        throw UserRejectedAction();
-      }
-
-      rethrow;
+      throw UserRejectedAction().tryParseError(e);
     }
   }
 
@@ -231,7 +222,7 @@ class Wallet {
       contract = _erc20.fromSigner(contractAddress: tokenAddress, signer: signer!);
     }
 
-    final balance = await contract.balanceOf(await signer!.address);
+    final balance = await contract.balanceOf(account: await signer!.address);
     final tokenDecimals = (await contract.decimals()).toInt();
     final balanceParsed = balance.parseTokenAmount(decimals: tokenDecimals);
 

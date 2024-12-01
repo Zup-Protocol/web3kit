@@ -1,15 +1,23 @@
 // coverage:ignore-file
 // ignore_for_file: implementation_imports
 
+import "package:web3kit/core/exceptions/ethers_exceptions.dart";
+import "package:web3kit/core/ethereum_calldata_encoder.dart";
 import "package:web3kit/core/signer.dart";
+import "package:web3kit/src/extensions/bigint_extension.dart";
+import "package:web3kit/core/dtos/transaction_response.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart"
-    if (dart.library.html) 'dart:js_interop';
+    if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart"
-    if (dart.library.html) 'dart:js_interop_unsafe';
+    if (dart.library.html) "dart:js_interop_unsafe";
 import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_provider.js.dart";
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethers/ethers_signer.js.dart";
+import "package:web3kit/src/mocks/utils.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/utils.js.dart";
+import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethers/ethers_contract_transaction_response.js.dart";
 
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
@@ -104,14 +112,19 @@ class Erc20Impl {
 
   final JSEthersContract _jsEthersContract;
 
-  Future<BigInt> balanceOf(String account) async {
-    final output = (await _jsEthersContract.balanceOf(account.toJS).toDart);
+  Future<BigInt> balanceOf({required String account}) async {
+    final output =
+        (await _jsEthersContract.balanceOf(account.toJS).toDart.catchError((e) {
+      throw UserRejectedAction().tryParseError(e);
+    }));
 
     return (BigInt.parse(output.toString()));
   }
 
   Future<BigInt> decimals() async {
-    final output = (await _jsEthersContract.decimals().toDart);
+    final output = (await _jsEthersContract.decimals().toDart.catchError((e) {
+      throw UserRejectedAction().tryParseError(e);
+    }));
 
     return (BigInt.parse(output.toString()));
   }

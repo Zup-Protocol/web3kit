@@ -76,13 +76,17 @@ class _JSEthersContractExtensionGenerator {
 
   List<Method> get _generateAbiMethodsAsDartJS {
     final List<Method> abiMethods = [];
+    final usedEntryNames = <String, int>{};
 
     for (var entry in abi.entries) {
+      final entryNameIsDuplicated = (usedEntryNames[entry.name] ?? 0) >= 1;
+      usedEntryNames[entry.name] = (usedEntryNames[entry.name] ?? 0) + 1;
+
       if (entry.type != SmartContractAbiEntryType.function) continue;
       final bool entryHasMultipleOutputs = entry.outputs.length > 1;
 
       String returnType() {
-        if (entry.outputs.isEmpty) return "";
+        if (!entry.stateMutability.isView) return "<JSEthersContractTransactionResponse>";
         if (entryHasMultipleOutputs) return "<JSObject>";
 
         return "<${smartContractTypeToDartJSType(entry.outputs.first.type)}>";
@@ -90,11 +94,17 @@ class _JSEthersContractExtensionGenerator {
 
       abiMethods.add(Method((method) {
         method.external = true;
-        method.name = entry.name;
+        if (entryNameIsDuplicated) method.annotations.add(refer("JS").newInstance([literal(entry.name)]));
+        method.name = entryNameIsDuplicated ? "${entry.name}${usedEntryNames[entry.name]! - 2}" : entry.name;
         method.requiredParameters.addAll(entry.inputs.map((input) {
           return Parameter((param) {
             param.name = input.name;
-            param.type = refer(smartContractTypeToDartJSType(input.type));
+            param.type = refer(
+              smartContractTypeToDartJSType(
+                input.type,
+                isTransaction: entry.stateMutability != SmartContractStateMutability.view,
+              ),
+            );
           });
         }));
         method.returns = refer("JSPromise${returnType()}");
@@ -103,12 +113,4 @@ class _JSEthersContractExtensionGenerator {
 
     return abiMethods;
   }
-
-  //  [
-  //       Method((method) {
-  //         method.external = true;
-  //         method.name = "factory";
-  //         method.returns = refer("JSPromise<JSString>");
-  //       }),
-  //     ];
 }

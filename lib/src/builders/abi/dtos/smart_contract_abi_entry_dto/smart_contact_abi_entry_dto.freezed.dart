@@ -24,6 +24,9 @@ mixin _$SmartContractAbiEntryDto {
   @JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
   SmartContractAbiEntryType get type => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+  SmartContractStateMutability get stateMutability =>
+      throw _privateConstructorUsedError;
   List<SmartContractAbiSignatureDto> get outputs =>
       throw _privateConstructorUsedError;
   List<SmartContractAbiSignatureDto> get inputs =>
@@ -49,6 +52,8 @@ abstract class $SmartContractAbiEntryDtoCopyWith<$Res> {
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       SmartContractAbiEntryType type,
       String name,
+      @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+      SmartContractStateMutability stateMutability,
       List<SmartContractAbiSignatureDto> outputs,
       List<SmartContractAbiSignatureDto> inputs});
 }
@@ -71,6 +76,7 @@ class _$SmartContractAbiEntryDtoCopyWithImpl<$Res,
   $Res call({
     Object? type = null,
     Object? name = null,
+    Object? stateMutability = null,
     Object? outputs = null,
     Object? inputs = null,
   }) {
@@ -83,6 +89,10 @@ class _$SmartContractAbiEntryDtoCopyWithImpl<$Res,
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      stateMutability: null == stateMutability
+          ? _value.stateMutability
+          : stateMutability // ignore: cast_nullable_to_non_nullable
+              as SmartContractStateMutability,
       outputs: null == outputs
           ? _value.outputs
           : outputs // ignore: cast_nullable_to_non_nullable
@@ -108,6 +118,8 @@ abstract class _$$SmartContractAbiEntryDtoImplCopyWith<$Res>
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       SmartContractAbiEntryType type,
       String name,
+      @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+      SmartContractStateMutability stateMutability,
       List<SmartContractAbiSignatureDto> outputs,
       List<SmartContractAbiSignatureDto> inputs});
 }
@@ -129,6 +141,7 @@ class __$$SmartContractAbiEntryDtoImplCopyWithImpl<$Res>
   $Res call({
     Object? type = null,
     Object? name = null,
+    Object? stateMutability = null,
     Object? outputs = null,
     Object? inputs = null,
   }) {
@@ -141,6 +154,10 @@ class __$$SmartContractAbiEntryDtoImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      stateMutability: null == stateMutability
+          ? _value.stateMutability
+          : stateMutability // ignore: cast_nullable_to_non_nullable
+              as SmartContractStateMutability,
       outputs: null == outputs
           ? _value._outputs
           : outputs // ignore: cast_nullable_to_non_nullable
@@ -156,17 +173,20 @@ class __$$SmartContractAbiEntryDtoImplCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true)
-class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
+class _$SmartContractAbiEntryDtoImpl extends _SmartContractAbiEntryDto {
   _$SmartContractAbiEntryDtoImpl(
       {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
       this.type = SmartContractAbiEntryType.unknown,
       this.name = "",
+      @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+      this.stateMutability = SmartContractStateMutability.unknown,
       final List<SmartContractAbiSignatureDto> outputs =
           const <SmartContractAbiSignatureDto>[],
       final List<SmartContractAbiSignatureDto> inputs =
           const <SmartContractAbiSignatureDto>[]})
       : _outputs = outputs,
-        _inputs = inputs;
+        _inputs = inputs,
+        super._();
 
   factory _$SmartContractAbiEntryDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$SmartContractAbiEntryDtoImplFromJson(json);
@@ -177,6 +197,9 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
   @override
   @JsonKey()
   final String name;
+  @override
+  @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+  final SmartContractStateMutability stateMutability;
   final List<SmartContractAbiSignatureDto> _outputs;
   @override
   @JsonKey()
@@ -197,7 +220,7 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
 
   @override
   String toString() {
-    return 'SmartContractAbiEntryDto(type: $type, name: $name, outputs: $outputs, inputs: $inputs)';
+    return 'SmartContractAbiEntryDto(type: $type, name: $name, stateMutability: $stateMutability, outputs: $outputs, inputs: $inputs)';
   }
 
   @override
@@ -207,6 +230,8 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
             other is _$SmartContractAbiEntryDtoImpl &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.stateMutability, stateMutability) ||
+                other.stateMutability == stateMutability) &&
             const DeepCollectionEquality().equals(other._outputs, _outputs) &&
             const DeepCollectionEquality().equals(other._inputs, _inputs));
   }
@@ -217,6 +242,7 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
       runtimeType,
       type,
       name,
+      stateMutability,
       const DeepCollectionEquality().hash(_outputs),
       const DeepCollectionEquality().hash(_inputs));
 
@@ -237,14 +263,17 @@ class _$SmartContractAbiEntryDtoImpl implements _SmartContractAbiEntryDto {
   }
 }
 
-abstract class _SmartContractAbiEntryDto implements SmartContractAbiEntryDto {
+abstract class _SmartContractAbiEntryDto extends SmartContractAbiEntryDto {
   factory _SmartContractAbiEntryDto(
           {@JsonKey(unknownEnumValue: SmartContractAbiEntryType.unknown)
           final SmartContractAbiEntryType type,
           final String name,
+          @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+          final SmartContractStateMutability stateMutability,
           final List<SmartContractAbiSignatureDto> outputs,
           final List<SmartContractAbiSignatureDto> inputs}) =
       _$SmartContractAbiEntryDtoImpl;
+  _SmartContractAbiEntryDto._() : super._();
 
   factory _SmartContractAbiEntryDto.fromJson(Map<String, dynamic> json) =
       _$SmartContractAbiEntryDtoImpl.fromJson;
@@ -254,6 +283,9 @@ abstract class _SmartContractAbiEntryDto implements SmartContractAbiEntryDto {
   SmartContractAbiEntryType get type;
   @override
   String get name;
+  @override
+  @JsonKey(unknownEnumValue: SmartContractStateMutability.unknown)
+  SmartContractStateMutability get stateMutability;
   @override
   List<SmartContractAbiSignatureDto> get outputs;
   @override

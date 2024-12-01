@@ -40,7 +40,12 @@ class JSString extends Equatable implements JSAny {
   List<Object?> get props => [name];
 }
 
-class JSBoolean implements JSAny {}
+class JSBoolean implements JSAny {
+  @visibleForTesting
+  final bool value;
+
+  const JSBoolean(this.value);
+}
 
 class JSFunction {
   JSFunction(this.dartFunction);
@@ -121,4 +126,8 @@ extension JSNumberToInt on JSNumber {
 
 extension IntToJSNumber on int {
   JSNumber get toJS => JSNumber(this);
+}
+
+extension BoolToJSBoolean on bool {
+  JSBoolean get toJS => JSBoolean(this);
 }

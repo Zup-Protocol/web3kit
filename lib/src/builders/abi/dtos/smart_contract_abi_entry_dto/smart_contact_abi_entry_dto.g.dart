@@ -14,6 +14,10 @@ _$SmartContractAbiEntryDtoImpl _$$SmartContractAbiEntryDtoImplFromJson(
               unknownValue: SmartContractAbiEntryType.unknown) ??
           SmartContractAbiEntryType.unknown,
       name: json['name'] as String? ?? "",
+      stateMutability: $enumDecodeNullable(
+              _$SmartContractStateMutabilityEnumMap, json['stateMutability'],
+              unknownValue: SmartContractStateMutability.unknown) ??
+          SmartContractStateMutability.unknown,
       outputs: (json['outputs'] as List<dynamic>?)
               ?.map((e) => SmartContractAbiSignatureDto.fromJson(
                   e as Map<String, dynamic>))
@@ -31,11 +35,21 @@ Map<String, dynamic> _$$SmartContractAbiEntryDtoImplToJson(
     <String, dynamic>{
       'type': _$SmartContractAbiEntryTypeEnumMap[instance.type]!,
       'name': instance.name,
+      'stateMutability':
+          _$SmartContractStateMutabilityEnumMap[instance.stateMutability]!,
       'outputs': instance.outputs.map((e) => e.toJson()).toList(),
       'inputs': instance.inputs.map((e) => e.toJson()).toList(),
     };
 
 const _$SmartContractAbiEntryTypeEnumMap = {
   SmartContractAbiEntryType.function: 'function',
+  SmartContractAbiEntryType.tuple: 'tuple',
   SmartContractAbiEntryType.unknown: 'unknown',
+};
+
+const _$SmartContractStateMutabilityEnumMap = {
+  SmartContractStateMutability.view: 'view',
+  SmartContractStateMutability.payable: 'payable',
+  SmartContractStateMutability.nonpayable: 'nonpayable',
+  SmartContractStateMutability.unknown: 'unknown',
 };
