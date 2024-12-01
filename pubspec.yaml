@@ -36,15 +36,15 @@ dependencies:
   url_launcher: ^6.3.0
   web: ^1.0.0
   zup_core:
-    path: ../zup_core
-    # git:
-    #   url: https://github.com/Zup-Protocol/zup-core.git
-    #   ref: main
+    # path: ../zup_core
+    git:
+      url: https://github.com/Zup-Protocol/zup-core.git
+      ref: main
   zup_ui_kit:
-    path: ../zup_ui_kit
-    # git:
-    #   url: https://github.com/Zup-Protocol/zup-ui-kit.git
-    #   ref: main
+    # path: ../zup_ui_kit
+    git:
+      url: https://github.com/Zup-Protocol/zup-ui-kit.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
