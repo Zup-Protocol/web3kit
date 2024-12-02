@@ -16,7 +16,7 @@ void main() {
     jsEthersContractTransactionResponse = JSEthersContractTransactionResponseMock();
 
     sut = TransactionResponse(
-      chainId: BigInt.from(1),
+      // chainId: BigInt.from(1),
       hash: "",
       transactionResponse: jsEthersContractTransactionResponse,
     );
@@ -64,7 +64,7 @@ void main() {
 
       final TransactionResponse sut = TransactionResponse.fromJS(jsEthersContractTransactionResponse);
 
-      expect(sut.chainId, chainId);
+      // expect(sut.chainId, chainId);
       expect(sut.hash, hash);
     },
   );

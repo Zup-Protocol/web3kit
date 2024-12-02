@@ -11,25 +11,17 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 class TransactionResponse {
   TransactionResponse({
     required this.hash,
-    required this.chainId,
     required this.transactionResponse,
   });
 
   /// The has of the sent transaction
   final String hash;
 
-  /// The chain that the transaction was sent to
-  final BigInt chainId;
-
   @protected
   final JSEthersContractTransactionResponse transactionResponse;
 
   factory TransactionResponse.fromJS(JSEthersContractTransactionResponse tx) {
-    return TransactionResponse(
-      hash: tx.hash.toDart,
-      chainId: BigInt.parse(tx.chainId.toString()),
-      transactionResponse: tx,
-    );
+    return TransactionResponse(hash: tx.hash.toDart, transactionResponse: tx);
   }
 
   /// Wait for the transaction to be confirmed by at least one block

@@ -7,6 +7,7 @@ import "package:web3kit/src/abis/erc_20.abi.g.dart";
 import "package:web3kit/src/cache.dart";
 import "package:web3kit/src/enums/eip_6963_event_enum.dart";
 import "package:web3kit/src/enums/ethereum_event.dart";
+import "package:web3kit/src/enums/ethereum_request_error.dart";
 import "package:web3kit/src/enums/ethers_error_code.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_detail.js_mock.dart";
@@ -827,5 +828,145 @@ void main() {
     await sut.connect(walletDetail);
 
     expect(await sut.tokenBalance(tokenAddress), tokenBalanceFormatted);
+  });
+
+  test("After connecting a wallet, the `connectedWallet` getter should return the connected wallet detail", () async {
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "name.com", icon: "icon.ico", rdns: "rdns.io"),
+      provider: EthereumProviderMock(),
+    );
+
+    await sut.connect(walletDetail);
+
+    expect(sut.connectedWallet, walletDetail);
+  });
+
+  test(
+    """When an error is thrown while `switchNetwork` is being called, the current connected wallet
+    is Rabby and the error is a Rabby request error, with the code of unrecognized chain id,
+    it should throw an [UnrecognizedChainId] error"",
+    """,
+    () async {
+      final connectedProvider = EthereumProviderMock();
+      final jsRabbyRequestError = JSRabbyRequestErrorMock();
+      final jsRabbyRequestErrorData = JSRabbyRequestErrorDataMock();
+
+      const rabbyRnds = "io.rabby";
+
+      final walletDetail = WalletDetail(
+        info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: rabbyRnds),
+        provider: connectedProvider,
+      );
+
+      when(() => connectedProvider.switchChain(any())).thenThrow(jsRabbyRequestError);
+      when(() => jsRabbyRequestError.data).thenReturn(jsRabbyRequestErrorData);
+      when(() => jsRabbyRequestErrorData.originalError).thenReturn(JSEthereumRequestError(
+        EthereumRequestError.unrecognizedChainId.code.toJS,
+      ));
+
+      await sut.connect(walletDetail);
+
+      expect(() => sut.switchNetwork("0x1"), throwsA(isA<UnrecognizedChainId>()));
+    },
+  );
+
+  test(
+    """When an error is thrown while `switchNetwork` is being called, the current connected wallet
+    is Rabby and the error is a Rabby request error, with the code not being of unrecognized chain id,
+    it should rethrow the error"",
+    """,
+    () async {
+      final connectedProvider = EthereumProviderMock();
+      final jsRabbyRequestError = JSRabbyRequestErrorMock();
+      final jsRabbyRequestErrorData = JSRabbyRequestErrorDataMock();
+
+      const rabbyRnds = "io.rabby";
+
+      final walletDetail = WalletDetail(
+        info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: rabbyRnds),
+        provider: connectedProvider,
+      );
+
+      when(() => connectedProvider.switchChain(any())).thenThrow(jsRabbyRequestError);
+      when(() => jsRabbyRequestError.data).thenReturn(jsRabbyRequestErrorData);
+      when(() => jsRabbyRequestErrorData.originalError).thenReturn(JSEthereumRequestError(2113237627352.toJS));
+
+      await sut.connect(walletDetail);
+
+      expect(() => sut.switchNetwork("0x1"), throwsA(isNot(isA<UnrecognizedChainId>())));
+    },
+  );
+
+  test(
+    """When an error is thrown while `switchNetwork` is being called, the current connected wallet
+    is Rabby and the error is not a Rabby request error, it should rethrow the error"",
+    """,
+    () async {
+      final connectedProvider = EthereumProviderMock();
+      const error = "Dale error";
+
+      const rabbyRnds = "io.rabby";
+
+      final walletDetail = WalletDetail(
+        info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: rabbyRnds),
+        provider: connectedProvider,
+      );
+
+      when(() => connectedProvider.switchChain(any())).thenThrow(error);
+
+      await sut.connect(walletDetail);
+
+      expect(() => sut.switchNetwork("0x1"), throwsA(error));
+    },
+  );
+
+  test(
+    "When calling `addNetwork` it should also update the signer, after the network is added",
+    () async {
+      final connectedProvider = EthereumProviderMock();
+      final expectedNewSigner = SignerMock();
+      const expectedNewSignerAddress = "0xNEW_SIGNER_ADDRESS";
+
+      final walletDetail = WalletDetail(
+        info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+        provider: connectedProvider,
+      );
+
+      when(() => connectedProvider.addChain(any())).thenAnswer((_) async => const ChainInfo(hexChainId: "0x1"));
+      await sut.connect(walletDetail);
+
+      when(() => browserProvider.getSigner(any())).thenAnswer((_) async => expectedNewSigner);
+      when(() => expectedNewSigner.address).thenAnswer((_) async => expectedNewSignerAddress);
+
+      await sut.addNetwork(const ChainInfo(hexChainId: "0x1"));
+      expect(await sut.signer!.address, await expectedNewSigner.address);
+    },
+  );
+
+  test("When calling `addNetwork` it should notify that the signer has changed", () async {
+    final connectedProvider = EthereumProviderMock();
+    final expectedNewSigner = SignerMock();
+    const expectedNewSignerAddress = "0xNEW_SIGNER_ADDRESS";
+    String actualNewSignerAddress = "";
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    sut.signerStream.listen((signer) async => actualNewSignerAddress = await signer!.address);
+
+    when(() => connectedProvider.addChain(any())).thenAnswer((_) async => const ChainInfo(hexChainId: "0x1"));
+    await sut.connect(walletDetail);
+
+    when(() => browserProvider.getSigner(any())).thenAnswer((_) async => expectedNewSigner);
+    when(() => expectedNewSigner.address).thenAnswer((_) async => expectedNewSignerAddress);
+
+    await sut.addNetwork(const ChainInfo(hexChainId: "0x1"));
+
+    // Needed to wait for the signer to be updated
+    await Future.delayed(const Duration(seconds: 0));
+
+    expect(actualNewSignerAddress, await expectedNewSigner.address);
   });
 }

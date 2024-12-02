@@ -19,6 +19,8 @@ import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.d
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" hide Cache;
+import "package:web3kit/src/mocks/rabby_request_error.js_mock.dart";
+import "package:web3kit/src/mocks/rabby_request_error_data.js_mock.dart";
 
 class SharedPreferencesWithCacheMock extends Mock implements SharedPreferencesWithCache {}
 
@@ -49,6 +51,10 @@ class Erc20Mock extends Mock implements Erc20 {}
 class Erc20ImplMock extends Mock implements Erc20Impl {}
 
 class JSEthersContractTransactionResponseMock extends Mock implements JSEthersContractTransactionResponse {}
+
+class JSRabbyRequestErrorMock extends Mock implements JSRabbyRequestError {}
+
+class JSRabbyRequestErrorDataMock extends Mock implements JSRabbyRequestErrorData {}
 
 // ignore: must_be_immutable
 class CustomJSEthereumProviderMock extends JSEthereumProvider {

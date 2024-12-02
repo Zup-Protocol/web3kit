@@ -15,6 +15,9 @@ import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_request_error.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
+import "package:web3kit/src/mocks/rabby_request_error.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/rabby_request_error.js.dart";
+import "package:zup_core/zup_core.dart";
 
 /// Object to interact with Web3 wallets.
 /// Can perform actions like connect, verify if specific wallet is installed, etc...
@@ -35,6 +38,7 @@ class Wallet {
   final List<WalletDetail> _installedWallets = [];
   EthereumProvider? _connectedProvider;
   Signer? _signer;
+  WalletDetail? _connectedWallet;
 
   /// Stream of the current connected signer
   ///
@@ -57,6 +61,11 @@ class Wallet {
   ///
   /// Returns null if no wallet is connected
   EthereumProvider? get connectedProvider => _connectedProvider;
+
+  /// Get the current connected wallet detail.
+  ///
+  /// Returns null if no wallet is connected
+  WalletDetail? get connectedWallet => _connectedWallet;
 
   /// Get the current network of the connected wallet
   ///
@@ -118,11 +127,18 @@ class Wallet {
       _updateSigner(await _browserProvider.getSigner(_connectedProvider!));
     } catch (e) {
       bool isEthereumRequestError = (e is JSEthereumRequestError);
-
       bool isUnrecognizedChainIdError =
-          isEthereumRequestError && (e).code.toDartInt == EthereumRequestError.unrecognizedChainId.code;
+          isEthereumRequestError && (e).code.toDartInt.equals(EthereumRequestError.unrecognizedChainId.code);
 
       if (isUnrecognizedChainIdError) throw UnrecognizedChainId(hexChainId);
+
+      // Rabby Wallet throws a different error when the chain is unrecognized.
+      // We need to check if the wallet is Rabby and then act accordingly
+      if (_connectedWallet!.info.rdns == "io.rabby" && e is JSRabbyRequestError) {
+        if (e.data.originalError?.code.toDartInt.equals(EthereumRequestError.unrecognizedChainId.code) ?? false) {
+          throw UnrecognizedChainId(hexChainId);
+        }
+      }
 
       rethrow;
     }
@@ -136,6 +152,7 @@ class Wallet {
     assert(_connectedProvider != null, "Wallet should be connected to add network");
 
     await _connectedProvider!.addChain(network);
+    _updateSigner(await _browserProvider.getSigner(_connectedProvider!));
   }
 
   /// Try to switch the current wallet chain to the given chain. But if the chain is not added yet in the wallet,
@@ -174,6 +191,7 @@ class Wallet {
     try {
       final newSigner = await _browserProvider.getSigner(wallet.provider);
       _connectedProvider = wallet.provider;
+      _connectedWallet = wallet;
 
       _updateSigner(newSigner);
 
