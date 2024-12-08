@@ -9,8 +9,8 @@ import "package:web3kit/web3kit.dart";
 import "../mocks.dart";
 
 class GoldenConfig {
-  static final pcDevice = [const Device(size: Size(1912, 1040), name: "pc")];
   static final smallSquareDevice = [const Device(size: Size(800, 800), name: "square")];
+  static final phoneDevice = [const Device(size: Size(375, 812), name: "phone")];
 
   static Future<Widget> builder(Widget child) async {
     await loadAppFonts();
@@ -31,8 +31,8 @@ class GoldenConfig {
   }
 }
 
-Future<DeviceBuilder> goldenDeviceBuilder(Widget child) async => DeviceBuilder()
-  ..overrideDevicesForAllScenarios(devices: GoldenConfig.smallSquareDevice)
+Future<DeviceBuilder> goldenDeviceBuilder(Widget child, {bool phoneDevice = false}) async => DeviceBuilder()
+  ..overrideDevicesForAllScenarios(devices: phoneDevice ? GoldenConfig.phoneDevice : GoldenConfig.smallSquareDevice)
   ..addScenario(widget: await GoldenConfig.builder(child));
 
 @isTest

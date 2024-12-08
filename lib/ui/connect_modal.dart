@@ -2,22 +2,21 @@ import "package:flutter/material.dart";
 import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/src/inject.dart";
 import "package:web3kit/web3kit.dart";
+import "package:zup_core/zup_core.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Show a modal that allows the user to connect their wallet.
 ///
-/// call `ConnectModal.show()` to open the modal from anywhere
-class ConnectModal extends StatelessWidget {
-  ConnectModal({super.key, required this.onConnectWallet});
+/// call `ConnectModal().show()` to open the modal from anywhere
+class ConnectModal extends StatelessWidget with DeviceInfoMixin {
+  ConnectModal({super.key, this.onConnectWallet});
 
   final Function(Signer signer)? onConnectWallet;
 
-  static Future<void> show(
-    BuildContext context, {
-    Function(Signer signer)? onConnectWallet,
-  }) async {
+  Future<void> show(BuildContext context) async {
     ZupModal.show(
       context,
+      showAsBottomSheet: isMobileSize(context),
       title: Web3KitLocalizations.of(context).connectWallet,
       description: Web3KitLocalizations.of(context).connectModalDescription,
       size: const Size(400, 500),

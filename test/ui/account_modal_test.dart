@@ -31,16 +31,21 @@ void main() {
 
   tearDown(() => resetInjections());
 
-  Future<DeviceBuilder> goldenBuilder() async => goldenDeviceBuilder(Builder(builder: (context) {
+  Future<DeviceBuilder> goldenBuilder({bool isMobile = false}) async => goldenDeviceBuilder(Builder(builder: (context) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          AccountModal.show(context);
+          const AccountModal().show(context);
         });
 
         return const SizedBox();
-      }));
+      }), phoneDevice: isMobile);
 
   zGoldenTest("Account modal golden test", goldenFileName: "account_modal", (tester) async {
     await tester.pumpDeviceBuilder(await goldenBuilder(), wrapper: GoldenConfig.localizationsWrapper());
+  });
+
+  zGoldenTest("When the running device has a mobile size, it should show a bottom sheet modal",
+      goldenFileName: "account_modal_bottom_sheet", (tester) async {
+    await tester.pumpDeviceBuilder(await goldenBuilder(isMobile: true), wrapper: GoldenConfig.localizationsWrapper());
   });
 
   zGoldenTest("When hovering the address, it should show the copy icon", goldenFileName: "account_modal_address_hover",

@@ -25,10 +25,12 @@ void main() {
     double buttonHeight = 60,
     int initialNetworkIndex = 0,
     bool addNetworksToWallet = true,
+    bool isCompact = false,
     Function(NetworkSwitcherItem item, int index)? onSelect,
   }) async =>
       await goldenDeviceBuilder(
         NetworkSwitcher(
+          compact: isCompact,
           buttonHeight: buttonHeight,
           initialNetworkIndex: initialNetworkIndex,
           addNetworksToWallet: addNetworksToWallet,
@@ -299,4 +301,27 @@ void main() {
     verifyNever(() => wallet.switchOrAddNetwork(any()));
     verify(() => wallet.switchNetwork(expectedSelectedNetwork.chainInfo!.hexChainId)).called(1);
   });
+
+  zGoldenTest(
+    "When passing `compact` as true, the network switcher button should show only the network icon",
+    goldenFileName: "network_switcher_compact",
+    (tester) async {
+      await tester.pumpDeviceBuilder(await goldenBuilder(
+        isCompact: true,
+        initialNetworkIndex: 0,
+        networks: [
+          NetworkSwitcherItem(
+            title: "Network 1",
+            icon: const Icon(Icons.abc),
+            chainInfo: const ChainInfo(hexChainId: "0x1"),
+          ),
+          NetworkSwitcherItem(
+            title: "Network 2",
+            icon: const Icon(Icons.add_box),
+            chainInfo: const ChainInfo(hexChainId: "0x2"),
+          ),
+        ],
+      ));
+    },
+  );
 }

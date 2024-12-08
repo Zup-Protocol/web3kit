@@ -5,6 +5,7 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "package:random_avatar/random_avatar.dart";
 import "package:web3kit/src/cubits/connected_wallet_button/connected_wallet_button_cubit.dart";
 import "package:web3kit/web3kit.dart";
+import "package:zup_core/zup_core.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Build a widget that shows the user's connected Wallet
@@ -24,7 +25,7 @@ class ConnectedWalletButton extends StatefulWidget {
   State<ConnectedWalletButton> createState() => _ConnectedWalletButtonState();
 }
 
-class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
+class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with DeviceInfoMixin {
   ConnectedWalletButtonCubit? cubit;
   StreamSubscription<Signer?>? _signerStream;
 
@@ -67,16 +68,16 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> {
               animationDuration: const Duration(milliseconds: 700),
               elevation: 0,
               height: 50,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: state.maybeWhen(
                 orElse: () => buttonContent(isLoading: true),
                 error: () => buttonContent(title: Web3KitLocalizations.of(context).unknownAddress),
                 success: (address, ensName) => buttonContent(
-                  title: ensName ?? address.shortAddress(prefixAndSuffixLength: 4),
+                  title: ensName ?? address.shortAddress(prefixAndSuffixLength: isMobileSize(context) ? 2 : 4),
                   avatarSeed: address,
                 ),
               ),
-              onPressed: () => AccountModal.show(context),
+              onPressed: () => const AccountModal().show(context),
             ),
           );
         },

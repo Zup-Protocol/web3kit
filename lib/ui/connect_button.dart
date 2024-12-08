@@ -33,9 +33,8 @@ class ConnectButton extends StatelessWidget {
                   backgroundColor: backgroundColor,
                   foregroundColor: foregroundColor,
                   title: Web3KitLocalizations.of(context).connectWallet,
-                  onPressed: () => ConnectModal.show(
+                  onPressed: () => ConnectModal(onConnectWallet: (signer) => onConnectWallet?.call(signer)).show(
                     context,
-                    onConnectWallet: (signer) => onConnectWallet?.call(signer),
                   ),
                   icon: customIcon ?? Assets.icons.cableConnectorHorizontal.svg(package: "web3kit"),
                 )

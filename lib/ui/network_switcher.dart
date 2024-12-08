@@ -27,6 +27,7 @@ class NetworkSwitcher extends StatefulWidget {
     this.onSelect,
     this.buttonHeight = 50,
     this.addNetworksToWallet = true,
+    this.compact = false,
   });
 
   /// The networks to show in the switcher, when tapping to switch
@@ -53,6 +54,13 @@ class NetworkSwitcher extends StatefulWidget {
   ///
   /// If those are not provided, an error will be thrown.
   final bool addNetworksToWallet;
+
+  /// whether to use compact mode for the button or not.
+  ///
+  /// The compact mode will show only the icon of the selected network in the button.
+  ///
+  /// Note that if the compact mode is enabled, all items must have an icon, otherwise an error will be thrown
+  final bool compact;
 
   @override
   State<NetworkSwitcher> createState() => _NetworkSwitcherState();
@@ -81,6 +89,7 @@ class _NetworkSwitcherState extends State<NetworkSwitcher> {
   @override
   Widget build(BuildContext context) {
     return ZupPopupMenuButton(
+      compact: widget.compact,
       key: const Key("network-switcher"),
       initialSelectedIndex: widget.initialNetworkIndex,
       items: widget.networks,

@@ -35,11 +35,28 @@ void main() {
     await tester.pumpDeviceBuilder(
         await goldenDeviceBuilder(Builder(builder: (context) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ConnectModal.show(context, onConnectWallet: (signer) {});
+            ConnectModal().show(context);
           });
 
           return const SizedBox();
         })),
+        wrapper: GoldenConfig.localizationsWrapper());
+  });
+
+  zGoldenTest(
+      "When calling `show`, but the running device size is the size of a mobile, is should show the modal as a bottom sheet",
+      goldenFileName: "connect_modal_show_bottom_sheet", (tester) async {
+    await tester.pumpDeviceBuilder(
+        await goldenDeviceBuilder(
+          Builder(builder: (context) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ConnectModal().show(context);
+            });
+
+            return const SizedBox();
+          }),
+          phoneDevice: true,
+        ),
         wrapper: GoldenConfig.localizationsWrapper());
   });
 

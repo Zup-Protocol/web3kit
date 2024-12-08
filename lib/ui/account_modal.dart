@@ -4,18 +4,20 @@ import "package:random_avatar/random_avatar.dart";
 import "package:web3kit/core/core.dart";
 import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/src/l10n/gen/app_localizations.dart";
+import "package:zup_core/mixins/device_info_mixin.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Show a modal that contain's the user's connected wallet information.
-/// Call `AccountModal.show()` to open the modal from anywhere
+/// Call `AccountModal().show()` to open the modal from anywhere
 ///
 /// `![Warning]` the modal will not open if the application is not connected to a wallet
-class AccountModal extends StatelessWidget {
+class AccountModal extends StatelessWidget with DeviceInfoMixin {
   const AccountModal({super.key});
 
-  static Future<void> show(BuildContext context) async {
+  Future<void> show(BuildContext context) async {
     ZupModal.show(
       context,
+      showAsBottomSheet: isMobileSize(context),
       title: Web3KitLocalizations.of(context).connected,
       size: const Size(300, 350),
       padding: const EdgeInsets.all(20).copyWith(top: 0),
