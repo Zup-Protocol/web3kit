@@ -7,6 +7,7 @@ repository: https://github.com/Zup-Protocol/web3kit
 
 environment:
   sdk: ^3.5.2
+  flutter: ^3.27.3
 
 dependencies:
   build: ^2.4.1
