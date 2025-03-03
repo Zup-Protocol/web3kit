@@ -96,17 +96,25 @@ class _JSEthersContractExtensionGenerator {
         method.external = true;
         if (entryNameIsDuplicated) method.annotations.add(refer("JS").newInstance([literal(entry.name)]));
         method.name = entryNameIsDuplicated ? "${entry.name}${usedEntryNames[entry.name]! - 2}" : entry.name;
-        method.requiredParameters.addAll(entry.inputs.map((input) {
-          return Parameter((param) {
-            param.name = input.name;
-            param.type = refer(
-              smartContractTypeToDartJSType(
-                input.type,
-                isTransaction: entry.stateMutability != SmartContractStateMutability.view,
-              ),
-            );
-          });
-        }));
+        method.requiredParameters.addAll([
+          ...entry.inputs.map((input) {
+            return Parameter((param) {
+              param.name = input.name;
+              param.type = refer(
+                smartContractTypeToDartJSType(
+                  input.type,
+                  isTransaction: entry.stateMutability != SmartContractStateMutability.view,
+                ),
+              );
+            });
+          }),
+          if (entry.stateMutability.isPayable)
+            Parameter((param) {
+              param.name = "overrides";
+              param.type = refer("JSObject");
+              param.required = false;
+            })
+        ]);
         method.returns = refer("JSPromise${returnType()}");
       }));
     }

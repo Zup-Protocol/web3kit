@@ -21,6 +21,7 @@ enum SmartContractStateMutability {
   unknown;
 
   bool get isView => this == SmartContractStateMutability.view;
+  bool get isPayable => this == SmartContractStateMutability.payable;
 }
 
 @freezed

@@ -125,7 +125,7 @@ void main() {
       const ChainInfo(
         hexChainId: "0x1",
         rpcUrls: ["http://rpc.io"],
-        nativeCurrency: NativeCurrency(name: "", decimals: 1, symbol: ""),
+        nativeCurrency: NativeCurrency(name: "", decimals: 1, symbol: "", logoUrl: ""),
       ),
     );
 
@@ -136,7 +136,8 @@ void main() {
     const networkInfo = ChainInfo(
       hexChainId: "0x1",
       rpcUrls: ["http://rpc.io"],
-      nativeCurrency: NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH"),
+      nativeCurrency:
+          NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH", logoUrl: "https://etherscan.io/images/ethereum.png"),
       blockExplorerUrls: ["https://etherscan.io"],
       chainName: "Ethereum",
       iconsURLs: ["https://etherscan.io/images/ethereum.png"],
@@ -165,7 +166,8 @@ void main() {
     const networkInfo = ChainInfo(
       hexChainId: "0x1",
       rpcUrls: ["http://rpc.io"],
-      nativeCurrency: NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH"),
+      nativeCurrency:
+          NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH", logoUrl: "https://etherscan.io/images/ethereum.png"),
       blockExplorerUrls: ["https://etherscan.io"],
       chainName: null,
       iconsURLs: ["https://etherscan.io/images/ethereum.png"],
@@ -193,7 +195,8 @@ void main() {
     const networkInfo = ChainInfo(
       hexChainId: "0x1",
       rpcUrls: ["http://rpc.io"],
-      nativeCurrency: NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH"),
+      nativeCurrency:
+          NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH", logoUrl: "https://etherscan.io/images/ethereum.png"),
       blockExplorerUrls: ["https://etherscan.io"],
       chainName: "Ethereum",
       iconsURLs: null,
@@ -221,7 +224,8 @@ void main() {
     const networkInfo = ChainInfo(
       hexChainId: "0x1",
       rpcUrls: ["http://rpc.io"],
-      nativeCurrency: NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH"),
+      nativeCurrency:
+          NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH", logoUrl: "https://etherscan.io/images/ethereum.png"),
       blockExplorerUrls: null,
       chainName: "Ethereum",
       iconsURLs: ["https://etherscan.io/images/ethereum.png"],
@@ -251,7 +255,8 @@ void main() {
     const networkInfo = ChainInfo(
       hexChainId: "0x1",
       rpcUrls: ["http://rpc.io"],
-      nativeCurrency: NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH"),
+      nativeCurrency:
+          NativeCurrency(name: "ETH", decimals: 1, symbol: "ETH", logoUrl: "https://etherscan.io/images/ethereum.png"),
       blockExplorerUrls: null,
       chainName: null,
       iconsURLs: null,

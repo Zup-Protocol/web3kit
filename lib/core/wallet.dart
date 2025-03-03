@@ -13,6 +13,8 @@ import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/eip_6963/eip_6963_event.js.dart";
 import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethereum_request_error.js.dart";
+import "package:web3kit/src/mocks/ethers_json_rpc_provider.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethers/ethers_json_rpc_provider.js.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" if (dart.library.html) "package:web/web.dart" hide Cache;
 import "package:web3kit/src/mocks/rabby_request_error.js_mock.dart"
@@ -245,5 +247,45 @@ class Wallet {
     final balanceParsed = balance.parseTokenAmount(decimals: tokenDecimals);
 
     return balanceParsed;
+  }
+
+  /// Get the native (e.g Ether, AVAX, BNB) balance of the connected wallet in converted decimals (e.g 1000000 -> `1.0`).
+  ///
+  /// If the `rpcUrl` is provided, it will use the `rpcUrl` to get the balance.
+  /// Otherwise, it will use the connected provider to get the balance.
+  /// (Note that if using the connected provider, it will only work if the wallet
+  /// is connected in the same network as thet intended to query, you can use [switchNetwork] to ensure that)
+  Future<double> nativeBalance({String? rpcUrl}) async {
+    assert(signer != null, "Wallet should be connected to get native currency balance");
+
+    BigInt weiBalance = BigInt.zero;
+
+    if (rpcUrl != null) {
+      final provider = JSEthersJsonRpcProvider(rpcUrl.toJS);
+      weiBalance = BigInt.parse((await provider.getBalance((await signer!.address).toJS).toDart).toString());
+    } else {
+      weiBalance = BigInt.parse(
+        (await connectedProvider!.jsEthereumProvider.getBalance((await signer!.address).toJS).toDart).toString(),
+      );
+    }
+
+    return weiBalance.parseTokenAmount(decimals: 18);
+  }
+
+  /// Get the balance of a specific ERC20 token or the native currency (e.g ETH) balance of the connected wallet.
+  /// Intended to be used when both native and token balances are needed, and you don't want to
+  /// split the logic between the two methods.
+  ///
+  /// `tokenAddress` is the address of the token to get the balance of. If passed as zero address,
+  ///  it will get the native balance, otherwise it will get the ERC20 token balance of the `tokenAddress`.
+  ///
+  /// If the `rpcUrl` is provided, it will use the `rpcUrl` to get the balance.
+  /// Otherwise, it will use the connected provider to get the balance
+  Future<double> nativeOrTokenBalance(String tokenAddress, {String? rpcUrl}) async {
+    assert(signer != null, "Wallet should be connected to get balances from");
+
+    if (tokenAddress == EthereumConstants.zeroAddress) return nativeBalance(rpcUrl: rpcUrl);
+
+    return tokenBalance(tokenAddress, rpcUrl: rpcUrl);
   }
 }

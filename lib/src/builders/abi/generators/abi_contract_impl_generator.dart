@@ -128,6 +128,16 @@ class _AbiContractImplGenerator {
           }));
         }
 
+        if (entry.stateMutability.isPayable) {
+          method.optionalParameters.add(Parameter((param) {
+            param.docs.addAll(["/// [ethValue] - Value to be sent in wei with the transaction"]);
+            param.name = "ethValue";
+            param.named = true;
+            param.required = false;
+            param.type = refer("BigInt?");
+          }));
+        }
+
         method.returns = refer("Future${returnType()}");
         method.body = Code("""
         final $outputVariableName = (await $jsEthersContractFieldName.$methodName(${entry.inputs.mapIndexed((index, input) {
@@ -138,8 +148,10 @@ class _AbiContractImplGenerator {
           }
 
           return "$inputName.toJS";
-        }).join(",")}).toDart.catchError((e) {
-      throw UserRejectedAction().tryParseError(e);
+        }).join(",")}
+        ${entry.stateMutability.isPayable ? "${entry.inputs.isNotEmpty ? "," : ""}JSObject()..setProperty('value'.toJS, (ethValue ?? BigInt.zero).toJS)" : ""})
+        .toDart.catchError((e) {
+          throw UserRejectedAction().tryParseError(e);
     })); 
 
         ${methodReturn()}

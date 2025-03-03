@@ -18,6 +18,8 @@ import "package:web3kit/src/mocks/utils.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/utils.js.dart";
 import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.dart"
     if (dart.library.html) "package:web3kit/src/js/ethers/ethers_contract_transaction_response.js.dart";
+import "package:web3kit/src/mocks/ethers_json_rpc_provider.js_mock.dart"
+    if (dart.library.html) "package:web3kit/src/js/ethers/ethers_json_rpc_provider.js.dart";
 
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
@@ -146,9 +148,4 @@ extension type JSEthersContract._(JSObject _) implements JSObject {
 
   external JSPromise<JSBigInt> balanceOf(JSString account);
   external JSPromise<JSBigInt> decimals();
-}
-@JS('ethers.JsonRpcProvider')
-extension type JSEthersJsonRpcProvider._(JSEthereumProvider _)
-    implements JSEthereumProvider {
-  external JSEthersJsonRpcProvider(JSString rpcUrl);
 }

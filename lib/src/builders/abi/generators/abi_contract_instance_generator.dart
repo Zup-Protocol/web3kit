@@ -75,7 +75,7 @@ class _AbiContractInstanceGenerator {
               [
                 refer("$contractAddressParamName.toJS"),
                 refer("$abiFieldName.toJS"),
-                refer(_JSEthersJsonRpcProviderGenerator.extensionName).newInstance([
+                refer("JSEthersJsonRpcProvider").newInstance([
                   refer("$rpcUrlParamName.toJS"),
                 ]),
               ],

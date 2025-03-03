@@ -13,8 +13,10 @@ class NativeCurrency extends Equatable {
   /// The number of decimals used by the native currency, e.g. 18
   final int decimals;
 
-  const NativeCurrency({required this.name, required this.symbol, required this.decimals});
+  final String logoUrl;
+
+  const NativeCurrency({required this.name, required this.symbol, required this.decimals, required this.logoUrl});
 
   @override
-  List<Object?> get props => [name, symbol, decimals];
+  List<Object?> get props => [name, symbol, decimals, logoUrl];
 }

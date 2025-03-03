@@ -11,4 +11,6 @@ extension type JSEthereumProvider._(JSObject _) implements JSObject {
   external void on(JSString event, JSFunction callback);
 
   external JSPromise request(JSObject method);
+
+  external JSPromise getBalance(JSString address);
 }

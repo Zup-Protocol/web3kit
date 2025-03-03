@@ -13,8 +13,10 @@ import "package:web3kit/src/inject.dart";
 import "package:web3kit/src/mocks/eip_6963_detail.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_detail_info.js_mock.dart";
 import "package:web3kit/src/mocks/eip_6963_event.js_mock.dart";
+import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart";
 import "package:web3kit/src/mocks/ethereum_request_error.js_mock.dart";
 import "package:web3kit/src/mocks/ethers_errors.js_mock.dart";
+import "package:web3kit/src/mocks/ethers_json_rpc_provider.js_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart";
 import "package:web3kit/src/mocks/package_mocks/web_mock.dart" hide Cache;
 
@@ -968,5 +970,120 @@ void main() {
     await Future.delayed(const Duration(seconds: 0));
 
     expect(actualNewSignerAddress, await expectedNewSigner.address);
+  });
+
+  test("""When calling `nativeBalance` and not passing a rpc url, it should return the
+  connected wallet native currency balance parsed to a common double from the connected
+  provider""", () async {
+    final connectedProvider = EthereumProviderMock();
+    final jsEthereumProvider = JSEthereumProviderMock();
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    when(() => connectedProvider.jsEthereumProvider).thenReturn(jsEthereumProvider);
+    when(() => jsEthereumProvider.getBalance(any())).thenReturn(JSPromise(JSBigInt(1000000000000000000)));
+
+    await sut.connect(walletDetail);
+    final balance = await sut.nativeBalance();
+
+    expect(balance, 1.0);
+  });
+
+  test("""When calling `nativeBalance` and passing a rpc url, it should return the
+  connected wallet native currency balance parsed to a common double using the rpc url
+  to make the request""", () async {
+    final connectedProvider = EthereumProviderMock();
+    final jsEthereumProvider = JSEthereumProviderMock();
+    const rpcUrl = "https://dale.com";
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    when(() => connectedProvider.jsEthereumProvider).thenReturn(jsEthereumProvider);
+
+    await sut.connect(walletDetail);
+    JSEthereumProvider.getBalanceReturn = 1000000000000000000;
+    final balance = await sut.nativeBalance(rpcUrl: rpcUrl);
+
+    expect(JSEthersJsonRpcProvider.lastRpcUrl, rpcUrl);
+    expect(balance, 1.0);
+  });
+
+  test("When calling `nativeBalance` and there is not a connected wallet, it should assert", () {
+    expect(() => sut.nativeBalance(), throwsAssertionError);
+  });
+
+  test("When calling 'nativeOrTokenBalance' passing a zero address, it should get the native balance", () async {
+    final connectedProvider = EthereumProviderMock();
+    final jsEthereumProvider = JSEthereumProviderMock();
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    when(() => connectedProvider.jsEthereumProvider).thenReturn(jsEthereumProvider);
+    when(() => jsEthereumProvider.getBalance(any())).thenReturn(JSPromise(JSBigInt(4200000000000000000)));
+
+    await sut.connect(walletDetail);
+    final balance = await sut.nativeOrTokenBalance(EthereumConstants.zeroAddress);
+
+    expect(balance, 4.2);
+  });
+
+  test("When calling 'nativeOrTokenBalance' passing a non-zero address, it should get the token balance", () async {
+    final connectedProvider = EthereumProviderMock();
+    final jsEthereumProvider = JSEthereumProviderMock();
+    final erc20Impl = Erc20ImplMock();
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    when(() => connectedProvider.jsEthereumProvider).thenReturn(jsEthereumProvider);
+    when(() => erc20.fromSigner(contractAddress: any(named: "contractAddress"), signer: any(named: "signer")))
+        .thenReturn(erc20Impl);
+    when(() => erc20Impl.balanceOf(account: any(named: "account"))).thenAnswer((_) async => BigInt.from(9100000));
+    when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.from(6));
+
+    await sut.connect(walletDetail);
+    final balance = await sut.nativeOrTokenBalance("0x123");
+
+    expect(balance, 9.1);
+  });
+
+  test("When calling 'nativeOrTokenBalance' and there is not a connected wallet, it should assert", () {
+    expect(() => sut.nativeOrTokenBalance(EthereumConstants.zeroAddress), throwsAssertionError);
+  });
+
+  test(
+      "When calling 'nativeOrTokenBalance' and passing a rpc url, it should create the erc20 contract from the rpc url",
+      () async {
+    final connectedProvider = EthereumProviderMock();
+    final jsEthereumProvider = JSEthereumProviderMock();
+    final erc20Impl = Erc20ImplMock();
+    const rpcUrl = "https://dalae.com";
+
+    final walletDetail = WalletDetail(
+      info: const WalletInfo(name: "Rabby Wallet", icon: "icon.ico", rdns: "io.rabby"),
+      provider: connectedProvider,
+    );
+
+    when(() => connectedProvider.jsEthereumProvider).thenReturn(jsEthereumProvider);
+    when(() => erc20.fromRpcProvider(contractAddress: any(named: "contractAddress"), rpcUrl: any(named: "rpcUrl")))
+        .thenReturn(erc20Impl);
+    when(() => erc20Impl.balanceOf(account: any(named: "account"))).thenAnswer((_) async => BigInt.from(9100000));
+    when(() => erc20Impl.decimals()).thenAnswer((_) async => BigInt.from(6));
+
+    await sut.connect(walletDetail);
+    await sut.nativeOrTokenBalance("0x123", rpcUrl: rpcUrl);
+
+    verify(() => erc20.fromRpcProvider(contractAddress: any(named: "contractAddress"), rpcUrl: rpcUrl)).called(1);
   });
 }

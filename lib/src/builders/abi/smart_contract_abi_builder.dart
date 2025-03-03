@@ -16,7 +16,6 @@ import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.l
 part "generators/abi_contract_impl_generator.dart";
 part "generators/abi_contract_instance_generator.dart";
 part "generators/js_ethers_contract_extension_generator.dart";
-part "generators/js_ethers_rpc_provider_extension_generator.dart";
 part "utils.dart";
 
 @protected
@@ -61,6 +60,7 @@ import "package:web3kit/core/exceptions/ethers_exceptions.dart";
 import "package:web3kit/core/ethereum_calldata_encoder.dart";
 import "package:web3kit/core/signer.dart";
 import "package:web3kit/src/extensions/bigint_extension.dart";
+import "package:web3kit/src/extensions/list_extension.dart";
 import "package:web3kit/core/dtos/transaction_response.dart";
 import "package:web3kit/src/mocks/package_mocks/js_interop_mock.dart" if (dart.library.html) "dart:js_interop";
 import "package:web3kit/src/mocks/package_mocks/js_interop_unsafe_mock.dart" if (dart.library.html) "dart:js_interop_unsafe";
@@ -68,6 +68,7 @@ import "package:web3kit/src/mocks/ethereum_provider.js_mock.dart" if (dart.libra
 import "package:web3kit/src/mocks/ethers_signer.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethers/ethers_signer.js.dart";
 import "package:web3kit/src/mocks/utils.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/utils.js.dart";
 import "package:web3kit/src/mocks/ethers_contract_transaction_response.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethers/ethers_contract_transaction_response.js.dart";
+import "package:web3kit/src/mocks/ethers_json_rpc_provider.js_mock.dart" if (dart.library.html) "package:web3kit/src/js/ethers/ethers_json_rpc_provider.js.dart";
 
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
@@ -82,10 +83,6 @@ ${code.accept(emitter)}
         .replaceAll(
           "external ${_JSEthersContractExtensionGenerator.extensionName}._",
           "external ${_JSEthersContractExtensionGenerator.extensionName}",
-        )
-        .replaceAll(
-          "external ${_JSEthersJsonRpcProviderGenerator.extensionName}._",
-          "external ${_JSEthersJsonRpcProviderGenerator.extensionName}",
         )
         .replaceAll(
           "external factory ${_JSEthersContractExtensionGenerator.extensionName}._",
@@ -122,7 +119,6 @@ class _Generator {
 
         library.body.addAll(_AbiContractImplGenerator(abiImplClassName, abi).code);
         library.body.addAll(_JSEthersContractExtensionGenerator(abi: abi).code);
-        library.body.addAll(_JSEthersJsonRpcProviderGenerator().code);
       },
     );
   }
