@@ -88,7 +88,7 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
                 child: MaterialButton(
                   elevation: 0,
                   hoverElevation: 0,
-                  hoverColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  hoverColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   animationDuration: const Duration(milliseconds: 500),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.all(20).copyWith(right: 18),
