@@ -13,6 +13,7 @@ class Inject {
     required this.browserProvider,
     required this.wallet,
     required this.launcher,
+    required this.sharedPreferencesWithCache,
   });
 
   static final _getIt = GetIt.instance;
@@ -24,6 +25,7 @@ class Inject {
   final BrowserProvider browserProvider;
   final Wallet wallet;
   final Launcher launcher;
+  final SharedPreferencesWithCache sharedPreferencesWithCache;
 
   static Future<void> setup() async {
     await _getIt.reset();
@@ -56,6 +58,7 @@ class Inject {
       browserProvider: _getIt<BrowserProvider>(),
       wallet: _getIt<Wallet>(),
       launcher: _getIt<Launcher>(),
+      sharedPreferencesWithCache: _getIt<SharedPreferencesWithCache>(),
     );
   }
 }

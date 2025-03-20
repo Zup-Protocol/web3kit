@@ -86,6 +86,7 @@ void mockInjections({BrowserProvider? customBrowserProvider, Wallet? customWalle
   GetIt.I.registerFactory<BrowserProvider>(() => customBrowserProvider ?? BrowserProviderMock());
   GetIt.I.registerFactory<Wallet>(() => customWallet ?? WalletMock());
   GetIt.I.registerFactory<Launcher>(() => customLauncher ?? LauncherMock());
+  GetIt.I.registerFactory<SharedPreferencesWithCache>(() => SharedPreferencesWithCacheMock());
 
   Inject.getInjections();
 }
