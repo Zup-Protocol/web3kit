@@ -20,7 +20,7 @@ void main() {
     const string = "test";
     await sut.setWalletConnectionState(string);
 
-    verify(() => sharedPreferencesWithCache.setString("CONNECTED_WALLET", string)).called(1);
+    verify(() => sharedPreferencesWithCache.setString(CacheKey.connectedWallet.key, string)).called(1);
   });
 
   test("when calling `getConnectedWallet` it should get the stored string with shared preferences", () async {
@@ -31,6 +31,10 @@ void main() {
     final returnedString = await sut.getConnectedWallet();
 
     expect(returnedString, expectedString);
-    verify(() => sharedPreferencesWithCache.getString("CONNECTED_WALLET")).called(1);
+    verify(() => sharedPreferencesWithCache.getString(CacheKey.connectedWallet.key)).called(1);
+  });
+
+  test("When calling `.keys` method in the cache key enum, it should return all the cache keys as Set", () {
+    expect(CacheKey.keys, CacheKey.values.map((key) => key.key).toSet());
   });
 }

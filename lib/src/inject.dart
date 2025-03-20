@@ -29,7 +29,9 @@ class Inject {
     await _getIt.reset();
 
     _getIt.registerSingletonAsync<SharedPreferencesWithCache>(
-      () async => await SharedPreferencesWithCache.create(cacheOptions: const SharedPreferencesWithCacheOptions()),
+      () async => await SharedPreferencesWithCache.create(
+        cacheOptions: SharedPreferencesWithCacheOptions(allowList: CacheKey.keys),
+      ),
     );
     _getIt.registerLazySingleton<Cache>(() => Cache(_getIt<SharedPreferencesWithCache>()));
     _getIt.registerLazySingleton<BrowserProvider>(() => BrowserProvider());
