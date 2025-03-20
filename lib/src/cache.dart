@@ -5,7 +5,7 @@ import "package:shared_preferences/shared_preferences.dart";
 enum CacheKey {
   connectedWallet;
 
-  String get key => toString();
+  String get key => name;
 
   static Set<String> get keys => values.map((key) => key.key).toSet();
 }
