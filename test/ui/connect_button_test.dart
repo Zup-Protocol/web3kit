@@ -76,7 +76,7 @@ void main() {
 
     await tester.hover(find.byKey(const Key("connect-button")));
   });
-  autoUpdateGoldenFiles = true;
+
   zGoldenTest(
       "When the signer event is emitted, and the signer is not null, it should switch to connected wallet button",
       goldenFileName: "connect_button_connected_signer_event", (tester) async {
