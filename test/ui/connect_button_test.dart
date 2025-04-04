@@ -25,15 +25,20 @@ void main() {
 
   tearDown(() => resetInjections());
 
-  Future<DeviceBuilder> goldenBuilder(
-          {Color? backgroundColor,
-          Color? foregroundColor,
-          Widget? customIcon,
-          dynamic Function(Signer)? onConnectWallet}) async =>
+  Future<DeviceBuilder> goldenBuilder({
+    Color? backgroundColor,
+    Color? foregroundColor,
+    Widget? customIcon,
+    dynamic Function(Signer)? onConnectWallet,
+    bool compact = false,
+    double? height,
+  }) async =>
       await goldenDeviceBuilder(ConnectButton(
           backgroundColor: backgroundColor,
           customIcon: customIcon,
           foregroundColor: foregroundColor,
+          compact: compact,
+          height: height,
           onConnectWallet: onConnectWallet ?? (Signer signer) {}));
 
   zGoldenTest("Connect button should use Zup UI Kit button if no account is connect", goldenFileName: "connect_button",
@@ -71,7 +76,7 @@ void main() {
 
     await tester.hover(find.byKey(const Key("connect-button")));
   });
-
+  autoUpdateGoldenFiles = true;
   zGoldenTest(
       "When the signer event is emitted, and the signer is not null, it should switch to connected wallet button",
       goldenFileName: "connect_button_connected_signer_event", (tester) async {
@@ -135,4 +140,28 @@ void main() {
 
     expect(connectedSigner, expectedConnectedSigner);
   });
+
+  zGoldenTest(
+    "When passing compact true, it should show a compact button",
+    goldenFileName: "connect_button_compact",
+    (tester) async {
+      await tester.pumpDeviceBuilder(await goldenBuilder(compact: true));
+    },
+  );
+
+  zGoldenTest(
+    "When setting a custom height for a compact button, it should set the height of the button",
+    goldenFileName: "connect_button_custom_height_compact",
+    (tester) async {
+      await tester.pumpDeviceBuilder(await goldenBuilder(compact: true, height: 100));
+    },
+  );
+
+  zGoldenTest(
+    "When setting a custom height for the button, it should set the height of the button",
+    goldenFileName: "connect_button_custom_height",
+    (tester) async {
+      await tester.pumpDeviceBuilder(await goldenBuilder(height: 100));
+    },
+  );
 }

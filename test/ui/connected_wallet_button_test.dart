@@ -28,10 +28,13 @@ void main() {
 
   tearDown(() => resetInjections());
 
-  Future<DeviceBuilder> goldenBuilder({Signer? customSigner}) async => goldenDeviceBuilder(ConnectedWalletButton(
-        signer: customSigner ?? signer,
-        width: 300,
-        height: 60,
+  Future<DeviceBuilder> goldenBuilder({Signer? customSigner, bool? compact}) async => goldenDeviceBuilder(Center(
+        child: ConnectedWalletButton(
+          signer: customSigner ?? signer,
+          width: 300,
+          height: 60,
+          compact: compact ?? false,
+        ),
       ));
 
   zGoldenTest("When initializing, it should get the signer address", goldenFileName: "connected_wallet_button",
@@ -124,5 +127,14 @@ void main() {
 
     await tester.tap(find.byKey(const Key("connected-wallet-button")));
     await tester.pumpAndSettle();
+  });
+
+  zGoldenTest("When passing compact true, the button should be compact (show only the avatar)",
+      goldenFileName: "connected_wallet_button_compact", (tester) async {
+    await tester.pumpDeviceBuilder(await goldenBuilder(customSigner: signer, compact: true));
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ConnectedWalletButton), findsOneWidget);
   });
 }

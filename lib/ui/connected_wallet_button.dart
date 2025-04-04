@@ -10,7 +10,7 @@ import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Build a widget that shows the user's connected Wallet
 class ConnectedWalletButton extends StatefulWidget {
-  const ConnectedWalletButton({super.key, required this.signer, this.width, this.height = 50});
+  const ConnectedWalletButton({super.key, required this.signer, this.width, this.height = 50, this.compact = false});
 
   /// The current connected signer
   final Signer signer;
@@ -20,6 +20,9 @@ class ConnectedWalletButton extends StatefulWidget {
 
   /// The max height of the button
   final double height;
+
+  /// Whether the button should be compact or not
+  final bool compact;
 
   @override
   State<ConnectedWalletButton> createState() => _ConnectedWalletButtonState();
@@ -58,6 +61,7 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with Devi
             width: widget.width,
             height: widget.height,
             child: MaterialButton(
+              minWidth: widget.compact ? 0 : null,
               key: const Key("connected-wallet-button"),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -93,17 +97,19 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with Devi
             height: 26,
             width: 26,
             child: isLoading ? const CircleAvatar(backgroundColor: ZupColors.gray5) : RandomAvatar(avatarSeed)),
-        const SizedBox(width: 10),
-        isLoading
-            ? Container(
-                height: 14,
-                width: 80,
-                decoration: BoxDecoration(color: ZupColors.gray5, borderRadius: BorderRadius.circular(12)),
-              )
-            : Text(
-                title,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              ),
+        if (!widget.compact) ...[
+          const SizedBox(width: 10),
+          isLoading
+              ? Container(
+                  height: 14,
+                  width: 80,
+                  decoration: BoxDecoration(color: ZupColors.gray5, borderRadius: BorderRadius.circular(12)),
+                )
+              : Text(
+                  title,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+        ]
       ],
     );
   }
