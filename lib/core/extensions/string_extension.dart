@@ -6,4 +6,9 @@ extension StringExtension on String {
   String shortAddress({int prefixAndSuffixLength = 4}) {
     return "${substring(0, prefixAndSuffixLength + 2)}...${substring(length - prefixAndSuffixLength, length)}";
   }
+
+  /// Returns whether the provided string is a valid ethereum address or not
+  bool isEthereumAddress() {
+    return RegExp(r"^0x[a-fA-F0-9]{40}$").hasMatch(this);
+  }
 }
