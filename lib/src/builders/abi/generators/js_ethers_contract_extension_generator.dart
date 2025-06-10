@@ -97,9 +97,9 @@ class _JSEthersContractExtensionGenerator {
         if (entryNameIsDuplicated) method.annotations.add(refer("JS").newInstance([literal(entry.name)]));
         method.name = entryNameIsDuplicated ? "${entry.name}${usedEntryNames[entry.name]! - 2}" : entry.name;
         method.requiredParameters.addAll([
-          ...entry.inputs.map((input) {
+          ...entry.inputs.mapIndexed((index, input) {
             return Parameter((param) {
-              param.name = input.name;
+              param.name = input.name.isEmpty ? "param$index" : input.name;
               param.type = refer(
                 smartContractTypeToDartJSType(
                   input.type,

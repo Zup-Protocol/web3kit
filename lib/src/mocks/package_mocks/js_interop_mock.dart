@@ -131,3 +131,11 @@ extension IntToJSNumber on int {
 extension BoolToJSBoolean on bool {
   JSBoolean get toJS => JSBoolean(this);
 }
+
+extension IterableToJS on Iterable {
+  List<JSAny> jsify() => map((e) => e.jsify()).toList() as List<JSAny>;
+}
+
+extension NullableObjectUtilExtension on Object? {
+  JSAny? jsify() => this as JSAny;
+}

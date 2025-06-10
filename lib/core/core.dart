@@ -9,3 +9,4 @@ export "ethereum_provider.dart";
 export "extensions/extensions.dart";
 export "signer.dart";
 export "wallet.dart";
+export "ethereum_encoder.dart";
