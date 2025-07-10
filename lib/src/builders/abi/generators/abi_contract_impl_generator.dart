@@ -66,7 +66,7 @@ class _AbiContractImplGenerator {
         final String maybeMultipleOutputCloseString = hasMultipleOutputs ? maybeNamedTupleCloseString : "";
 
         return "<$maybeMultipleOutputOpenString ${entry.outputs.map((output) {
-          return "${smartContractTypeToDartType(output)}${(isAllOutputsNamed && hasMultipleOutputs) ? " ${output.name}" : ""}";
+          return "${smartContractTypeToDartType(output)}${(isAllOutputsNamed && hasMultipleOutputs) ? " ${output.name.removeUnderScores}" : ""}";
         }).join(",")}$maybeMultipleOutputCloseString>";
       }
 
@@ -78,7 +78,8 @@ class _AbiContractImplGenerator {
 
         return "return (${entry.outputs.mapIndexed((index, output) {
           final getPropertyMethod = '.getProperty<${smartContractTypeToDartJSType(output.type)}>("$index".toJS)';
-          final maybeNamedOutputString = (isAllOutputsNamed && hasMultipleOutputs) ? "${output.name}:" : "";
+          final maybeNamedOutputString =
+              (isAllOutputsNamed && hasMultipleOutputs) ? "${output.name.removeUnderScores}:" : "";
           final maybeAwait = entry.stateMutability.isView ? "" : "await";
 
           final isBigIntReturn = smartContractTypeToDartJSType(output.type) == (JSBigInt).toString();
