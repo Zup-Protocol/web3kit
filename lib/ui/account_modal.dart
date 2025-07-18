@@ -60,7 +60,7 @@ class AccountModal extends StatelessWidget with DeviceInfoMixin {
                           foregroundColor: ZupColors.black,
                           border: const BorderSide(color: ZupColors.gray5, width: 1),
                           title: addressSnapshot.data?.shortAddress(prefixAndSuffixLength: 6) ?? "",
-                          onPressed: () {
+                          onPressed: (buttonContext) {
                             Clipboard.setData(ClipboardData(text: addressSnapshot.data ?? ""));
                             ScaffoldMessenger.of(context).showSnackBar(
                               ZupSnackBar(
@@ -86,7 +86,7 @@ class AccountModal extends StatelessWidget with DeviceInfoMixin {
                       fixedIcon: false,
                       mainAxisSize: MainAxisSize.max,
                       icon: Assets.icons.cableConnectorSlash.svg(package: "web3kit"),
-                      onPressed: () async => await Wallet.shared.disconnect(),
+                      onPressed: (buttonContext) async => await Wallet.shared.disconnect(),
                     )
                   ],
                 );

@@ -46,9 +46,9 @@ dependencies:
       url: https://github.com/Zup-Protocol/zup-ui-kit.git
       ref: main
 
-dependency_overrides:
-  # zup_ui_kit:
-  #   path: ../zup-ui-kit
+# dependency_overrides:
+#   zup_ui_kit:
+#     path: ../zup-ui-kit
 
 dev_dependencies:
   flutter_test:
