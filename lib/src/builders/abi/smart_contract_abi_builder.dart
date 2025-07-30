@@ -90,7 +90,7 @@ ${code.accept(emitter)}
         );
 
     try {
-      return DartFormatter().format(sourceWithManualFixes);
+      return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion).format(sourceWithManualFixes);
     } catch (e) {
       log.severe("Could not format generated code from ABI, this is likely a bug", e);
       return sourceWithManualFixes;

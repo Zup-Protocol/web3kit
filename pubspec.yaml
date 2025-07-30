@@ -6,17 +6,17 @@ homepage: https://www.zupprotocol.xyz
 repository: https://github.com/Zup-Protocol/web3kit
 
 environment:
-  sdk: ^3.5.2
+  sdk: ^3.8.0
   flutter: ^3.32.2
 
 dependencies:
-  build: ^2.4.1
-  build_runner: ^2.4.13
-  build_runner_core: ^7.3.2
+  build: ^3.0.0
+  build_runner: ^2.6.0
+  build_runner_core: ^9.2.0
   code_builder: ^4.10.0
   collection: ^1.18.0
-  dart_style: ^2.3.7
-  decimal: ^3.0.2
+  dart_style: ^3.1.1
+  decimal: ^3.2.4
   equatable: ^2.0.5
   flutter:
     sdk: flutter
@@ -24,9 +24,9 @@ dependencies:
   flutter_bloc: ^8.1.6
   flutter_localizations:
     sdk: flutter
-  flutter_svg: ^2.0.10+1
-  freezed: ^2.5.7
-  freezed_annotation: ^2.4.4
+  flutter_svg: ^2.2.0
+  freezed: ^3.2.0
+  freezed_annotation: ^3.1.0
   get_it: ^7.7.0
   hashlib: ^1.21.1
   intl: ^0.20.2
@@ -46,9 +46,12 @@ dependencies:
       url: https://github.com/Zup-Protocol/zup-ui-kit.git
       ref: main
 
-# dependency_overrides:
-#   zup_ui_kit:
-#     path: ../zup-ui-kit
+dependency_overrides:
+  # zup_ui_kit:
+  #   path: ../zup-ui-kit
+  # zup_core:
+  #   path: ../zup-core
+  build: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -60,7 +63,7 @@ dev_dependencies:
   golden_toolkit: ^0.15.0
   mocktail_image_network: ^1.2.0
   json_serializable: ^6.8.0
-  build_test: ^2.2.2
+  build_test: ^3.3.0
 
 flutter_gen:
   output: lib/src/gen/
