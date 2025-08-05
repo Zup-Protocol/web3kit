@@ -62,13 +62,15 @@ import 'app_localizations_en.dart';
 /// property.
 abstract class Web3KitLocalizations {
   Web3KitLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
   static Web3KitLocalizations of(BuildContext context) {
     return Localizations.of<Web3KitLocalizations>(
-        context, Web3KitLocalizations)!;
+      context,
+      Web3KitLocalizations,
+    )!;
   }
 
   static const LocalizationsDelegate<Web3KitLocalizations> delegate =
@@ -86,11 +88,11 @@ abstract class Web3KitLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
@@ -181,7 +183,8 @@ class _Web3KitLocalizationsDelegate
   @override
   Future<Web3KitLocalizations> load(Locale locale) {
     return SynchronousFuture<Web3KitLocalizations>(
-        lookupWeb3KitLocalizations(locale));
+      lookupWeb3KitLocalizations(locale),
+    );
   }
 
   @override
@@ -200,8 +203,9 @@ Web3KitLocalizations lookupWeb3KitLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'Web3KitLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'Web3KitLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

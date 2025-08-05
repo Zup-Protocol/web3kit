@@ -4,7 +4,7 @@ import "package:random_avatar/random_avatar.dart";
 import "package:web3kit/core/core.dart";
 import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/src/l10n/gen/app_localizations.dart";
-import "package:zup_core/mixins/device_info_mixin.dart";
+import "package:zup_core/zup_core.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Show a modal that contain's the user's connected wallet information.
@@ -28,69 +28,72 @@ class AccountModal extends StatelessWidget with DeviceInfoMixin {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Signer?>(
-        stream: Wallet.shared.signerStream,
-        initialData: Wallet.shared.signer,
-        builder: (context, signerSnapshot) {
-          if (!signerSnapshot.hasData) {
-            WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));
-            return const SizedBox.shrink();
-          }
+      stream: Wallet.shared.signerStream,
+      initialData: Wallet.shared.signer,
+      builder: (context, signerSnapshot) {
+        if (!signerSnapshot.hasData) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context));
+          return const SizedBox.shrink();
+        }
 
-          return FutureBuilder<String>(
-              future: signerSnapshot.data?.address,
-              initialData: ".............",
-              builder: (context, addressSnapshot) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+        return FutureBuilder<String>(
+          future: signerSnapshot.data?.address,
+          initialData: ".............",
+          builder: (context, addressSnapshot) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 5, strokeAlign: 0.1, color: Colors.brown),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: RandomAvatar(addressSnapshot.data ?? "", height: 100, width: 100),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 5, strokeAlign: 0.1, color: Colors.brown),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: RandomAvatar(addressSnapshot.data ?? "", height: 100, width: 100),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ZupPrimaryButton(
-                          key: const Key("copy-address"),
-                          hoverElevation: 0,
-                          backgroundColor: ZupColors.white,
-                          foregroundColor: ZupColors.black,
-                          border: const BorderSide(color: ZupColors.gray5, width: 1),
-                          title: addressSnapshot.data?.shortAddress(prefixAndSuffixLength: 6) ?? "",
-                          onPressed: (buttonContext) {
-                            Clipboard.setData(ClipboardData(text: addressSnapshot.data ?? ""));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              ZupSnackBar(
-                                context,
-                                message: Web3KitLocalizations.of(context).addressCopiedText,
-                                type: ZupSnackBarType.info,
-                                hideCloseIcon: true,
-                                snackDuration: const Duration(milliseconds: 2000),
-                              ),
-                            );
-                          },
-                          icon: Assets.icons.squareOnSquare.svg(package: "web3kit"),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
                     ZupPrimaryButton(
-                      key: const Key("disconnect-wallet"),
+                      key: const Key("copy-address"),
                       hoverElevation: 0,
-                      backgroundColor: ZupColors.red5,
-                      foregroundColor: ZupColors.red,
-                      title: Web3KitLocalizations.of(context).disconnectWallet,
-                      fixedIcon: false,
-                      mainAxisSize: MainAxisSize.max,
-                      icon: Assets.icons.cableConnectorSlash.svg(package: "web3kit"),
-                      onPressed: (buttonContext) async => await Wallet.shared.disconnect(),
-                    )
+                      backgroundColor: ZupThemeColors.backgroundSurface.themed(context.brightness),
+                      foregroundColor: ZupThemeColors.primaryText.themed(context.brightness),
+                      border: BorderSide(color: ZupThemeColors.borderOnBackground.themed(context.brightness), width: 1),
+                      title: addressSnapshot.data?.shortAddress(prefixAndSuffixLength: 6) ?? "",
+                      onPressed: (buttonContext) {
+                        Clipboard.setData(ClipboardData(text: addressSnapshot.data ?? ""));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          ZupSnackBar(
+                            context,
+                            message: Web3KitLocalizations.of(context).addressCopiedText,
+                            type: ZupSnackBarType.info,
+                            hideCloseIcon: true,
+                            snackDuration: const Duration(milliseconds: 2000),
+                          ),
+                        );
+                      },
+                      icon: Assets.icons.squareOnSquare.svg(package: "web3kit"),
+                    ),
                   ],
-                );
-              });
-        });
+                ),
+                const Spacer(),
+                ZupPrimaryButton(
+                  key: const Key("disconnect-wallet"),
+                  hoverElevation: 0,
+                  backgroundColor: ZupThemeColors.error.themed(context.brightness).withValues(alpha: 0.1),
+                  foregroundColor: ZupThemeColors.error.themed(context.brightness),
+                  title: Web3KitLocalizations.of(context).disconnectWallet,
+                  fixedIcon: false,
+                  mainAxisSize: MainAxisSize.max,
+                  icon: Assets.icons.cableConnectorSlash.svg(package: "web3kit"),
+                  onPressed: (buttonContext) async => await Wallet.shared.disconnect(),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }

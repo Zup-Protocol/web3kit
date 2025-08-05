@@ -63,11 +63,12 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with Devi
             child: MaterialButton(
               minWidth: widget.compact ? 0 : null,
               key: const Key("connected-wallet-button"),
+              hoverColor: ZupThemeColors.hoverOnBackgroundSurface.themed(context.brightness),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: ZupColors.gray5),
+                side: BorderSide(color: ZupThemeColors.borderOnBackground.themed(context.brightness)),
               ),
-              color: ZupColors.white,
+              color: ZupThemeColors.backgroundSurface.themed(context.brightness),
               hoverElevation: 14,
               animationDuration: const Duration(milliseconds: 700),
               elevation: 0,
@@ -94,9 +95,10 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with Devi
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-            height: 26,
-            width: 26,
-            child: isLoading ? const CircleAvatar(backgroundColor: ZupColors.gray5) : RandomAvatar(avatarSeed)),
+          height: 26,
+          width: 26,
+          child: isLoading ? const CircleAvatar(backgroundColor: ZupColors.gray5) : RandomAvatar(avatarSeed),
+        ),
         if (!widget.compact) ...[
           const SizedBox(width: 10),
           isLoading
@@ -107,9 +109,13 @@ class _ConnectedWalletButtonState extends State<ConnectedWalletButton> with Devi
                 )
               : Text(
                   title,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: ZupThemeColors.primaryText.themed(context.brightness),
+                  ),
                 ),
-        ]
+        ],
       ],
     );
   }

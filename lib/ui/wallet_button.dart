@@ -5,6 +5,7 @@ import "package:flutter_svg/flutter_svg.dart";
 import "package:web3kit/src/cubits/wallet_button/wallet_button_cubit.dart";
 import "package:web3kit/src/gen/assets.gen.dart";
 import "package:web3kit/web3kit.dart";
+import "package:zup_core/zup_core.dart";
 import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Show a button widget that allows the user to connect their wallet once they click it
@@ -58,12 +59,14 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
           error: () {
             animationController?.reset();
 
-            return ScaffoldMessenger.of(context).showSnackBar(ZupSnackBar(
-              message: Web3KitLocalizations.of(context).walletButtonConnectError(widget.walletDetail.info.name),
-              customIcon: Assets.icons.walletBifold.svg(package: "web3kit"),
-              context,
-              type: ZupSnackBarType.error,
-            ));
+            return ScaffoldMessenger.of(context).showSnackBar(
+              ZupSnackBar(
+                message: Web3KitLocalizations.of(context).walletButtonConnectError(widget.walletDetail.info.name),
+                customIcon: Assets.icons.walletBifold.svg(package: "web3kit"),
+                context,
+                type: ZupSnackBarType.error,
+              ),
+            );
           },
           orElse: () => animationController?.reset(),
         ),
@@ -76,7 +79,9 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isHovering ? Theme.of(context).primaryColor : ZupColors.gray5,
+                color: isHovering
+                    ? Theme.of(context).primaryColor
+                    : ZupThemeColors.borderOnBackground.themed(context.brightness),
                 width: isHovering ? 1.5 : 0.5,
               ),
             ),
@@ -106,7 +111,10 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
                           ),
                         ),
                       ).animate(
-                        effects: [const ShimmerEffect(duration: Duration(milliseconds: 600)), const ShakeEffect(hz: 5)],
+                        effects: [
+                          const ShimmerEffect(duration: Duration(milliseconds: 600)),
+                          const ShakeEffect(hz: 5),
+                        ],
                         controller: animationController,
                         autoPlay: false,
                       ),
@@ -116,7 +124,9 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isHovering ? Theme.of(context).primaryColor : ZupColors.black,
+                          color: isHovering
+                              ? Theme.of(context).primaryColor
+                              : ZupThemeColors.primaryText.themed(context.brightness),
                         ),
                       ),
                       const Spacer(),
@@ -124,7 +134,7 @@ class _WalletButtonState extends State<WalletButton> with TickerProviderStateMix
                         Text(
                           Web3KitLocalizations.of(context).installed,
                           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300, color: ZupColors.gray),
-                        )
+                        ),
                     ],
                   ),
                   onPressed: () async => cubit.connectWallet(widget.walletDetail),

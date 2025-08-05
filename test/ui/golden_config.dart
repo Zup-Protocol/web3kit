@@ -16,18 +16,13 @@ class GoldenConfig {
     await loadAppFonts();
 
     return MaterialApp(
-      localizationsDelegates: const [
-        Web3KitLocalizations.delegate,
-      ],
+      localizationsDelegates: const [Web3KitLocalizations.delegate],
       home: Scaffold(body: Center(child: child)),
     );
   }
 
   static Widget Function(Widget) localizationsWrapper() {
-    return (child) => MaterialApp(
-          localizationsDelegates: const [Web3KitLocalizations.delegate],
-          home: child,
-        );
+    return (child) => MaterialApp(localizationsDelegates: const [Web3KitLocalizations.delegate], home: child);
   }
 }
 

@@ -5,11 +5,7 @@ import "package:zup_ui_kit/zup_ui_kit.dart";
 
 /// Item to represent a network in the [NetworkSwitcher]. This item will be shown in the list of networks when clicking the switcher
 class NetworkSwitcherItem extends ZupPopupMenuItem {
-  NetworkSwitcherItem({
-    required super.title,
-    required this.chainInfo,
-    super.icon,
-  });
+  NetworkSwitcherItem({required super.title, required this.chainInfo, super.icon});
 
   /// Network information about the chain to switch to. If null, it's intended that the wallet should not be requested to change to this network
   ///
