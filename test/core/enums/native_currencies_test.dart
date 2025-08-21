@@ -7,10 +7,11 @@ void main() {
     expect(
       NativeCurrencies.eth.currencyInfo,
       const NativeCurrency(
-          name: "Ethereum",
-          symbol: "ETH",
-          decimals: 18,
-          logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"),
+        name: "Ethereum",
+        symbol: "ETH",
+        decimals: 18,
+        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
+      ),
     );
   });
 
@@ -18,10 +19,23 @@ void main() {
     expect(
       NativeCurrencies.bnb.currencyInfo,
       const NativeCurrency(
-          name: "BNB",
-          symbol: "BNB",
-          decimals: 18,
-          logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"),
+        name: "BNB",
+        symbol: "BNB",
+        decimals: 18,
+        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      ),
+    );
+  });
+
+  test("When getting the `currencyInfo` for the hyper, it should return the correct info", () {
+    expect(
+      NativeCurrencies.hype.currencyInfo,
+      const NativeCurrency(
+        name: "Hyperliquid",
+        symbol: "HYPE",
+        decimals: 18,
+        logoUrl: "https://s2.coinmarketcap.com/static/img/coins/128x128/32196.png",
+      ),
     );
   });
 
