@@ -10,7 +10,7 @@ void main() {
         name: "Ethereum",
         symbol: "ETH",
         decimals: 18,
-        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
+        logoUrl: "https://assets-cdn.trustwallet.com/blockchains/ethereum/info/logo.png",
       ),
     );
   });
@@ -22,7 +22,7 @@ void main() {
         name: "BNB",
         symbol: "BNB",
         decimals: 18,
-        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+        logoUrl: "https://assets-cdn.trustwallet.com/blockchains/binance/info/logo.png",
       ),
     );
   });
@@ -46,7 +46,7 @@ void main() {
         name: "Polygon Ecosystem Token",
         symbol: "POL",
         decimals: 18,
-        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png",
+        logoUrl: "https://assets-cdn.trustwallet.com/blockchains/polygon/info/logo.png",
       ),
     );
   });
@@ -58,7 +58,7 @@ void main() {
         name: "Avalanche",
         symbol: "AVAX",
         decimals: 18,
-        logoUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchex/info/logo.png",
+        logoUrl: "https://assets-cdn.trustwallet.com/blockchains/avalanchex/info/logo.png",
       ),
     );
   });

@@ -43,10 +43,12 @@ class EthereumAbiCoder {
       } else if (value is List) {
         // ignore: unnecessary_cast
         return _parseListToJSTypedList(value).jsify() as JSArray<JSAny>;
+      } else if (value is int) {
+        return value.toJS;
       } else {
         throw ArgumentError("Unsupported value type: ${value.runtimeType}");
       }
-    }).toList() as List<JSAny>;
+    }).toList();
 
     return jsTypedArray;
   }
