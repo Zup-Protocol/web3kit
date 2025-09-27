@@ -62,4 +62,16 @@ void main() {
       ),
     );
   });
+
+  test("When getting the `currencyInfo` for the xpl, it should return the correct info", () {
+    expect(
+      NativeCurrencies.xpl.currencyInfo,
+      const NativeCurrency(
+        name: "Plasma",
+        symbol: "XPL",
+        decimals: 18,
+        logoUrl: "https://s2.coinmarketcap.com/static/img/coins/128x128/36645.png",
+      ),
+    );
+  });
 }
