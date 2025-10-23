@@ -56,8 +56,12 @@ class ConnectButton extends StatelessWidget {
     if (compact) {
       return ZupIconButton(
         minimumHeight: height,
-        icon: Assets.icons.cableConnectorHorizontal.svg(package: "web3kit", height: 6, width: 6),
-        iconColor: foregroundColor ?? ZupColors.white,
+        icon: Assets.icons.cableConnectorHorizontal.svg(
+          package: "web3kit",
+          height: 6,
+          width: 6,
+          colorFilter: ColorFilter.mode(foregroundColor ?? ZupColors.white, BlendMode.srcIn),
+        ),
         backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
         padding: const EdgeInsets.all(20),
         onPressed: (_) => onPressed(),
